@@ -1,0 +1,68 @@
+package com.Ild_Mail.models;
+
+import com.Ild_Mail.Interfaces.ILetter;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Letter implements ILetter {
+    private String _subject = null;
+    private String _content = null;
+    private List<File> _files = new ArrayList<File>();
+
+    private LetterWriter letterWriter = null;
+
+    public String getSubject() {
+        return this._subject;
+    }
+
+    public void setSubject(String subject) {
+        this._subject = subject;
+    }
+
+    public String getContent() {
+        return this._content;
+    }
+
+    public void setContent(String content) {
+        this._content = content;
+    }
+
+    public List<File> getFiles() {
+        return this._files;
+    }
+
+    public void setFiles(List<File> files) {
+        this._files = files;
+    }
+
+    public void AddFile(File file) {
+        this._files.add(file);
+    }
+
+    public void Clear() {
+        this._files.clear();
+        this._files = null;
+    }
+
+    public void RemoveFile(int index) {
+        this._files.remove(index);
+    }
+
+    public void InsertFile(int index, File file) throws Exception {
+       throw new Exception("Method without anything");
+    }
+
+    public void ModifyFile(int index, File file) {
+        this._files.set(index, file);
+    }
+
+
+
+
+    public List<String> ShowLetter(){
+        letterWriter = new LetterWriter(_subject, _content.split("\n"));
+        return  letterWriter.WriteLetter();
+    }
+}
