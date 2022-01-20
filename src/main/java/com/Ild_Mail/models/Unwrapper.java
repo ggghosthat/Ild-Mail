@@ -1,17 +1,11 @@
 package com.Ild_Mail.models;
 
-import org.parboiled.common.FileUtils;
-import sun.misc.IOUtils;
-import sun.reflect.misc.FieldUtil;
-
 import javax.activation.DataHandler;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +17,8 @@ public class Unwrapper {
     List<Multipart> multipartLetters = new ArrayList<Multipart>();
     List<String> textLetters = new ArrayList<String>();
 
+    private Logger _logger = new Logger();
+
     public Unwrapper (List<Message> messages)
     {
         this.messages = messages;
@@ -32,56 +28,18 @@ public class Unwrapper {
         for (Message mes : messages){
             Object content = mes.getContent();
             if(content instanceof String){
-                System.out.println("Plain Text Letter > " + content);
+                _logger.PutLog("[MAIL] Plain Text Letter > " + mes.getSubject() + "\n" + content.toString());
+                System.out.println("[MAIL] Plain Text Letter > " + content);
                 textLetters.add((String) content);
             }
             else if(content instanceof  Multipart){
+                _logger.PutLog("[MAIL] Multipart Letter > " + mes.getSubject());
                 Multipart multipart = (Multipart) content;
                 MultipartParse(multipart);
+
             }
         }
     }
-
-    private void UnwrapMultipartMsg(Multipart multipart){
-        try {
-            for (int x = 0; x < multipart.getCount(); x++) {
-                BodyPart bodyPart = multipart.getBodyPart(x);
-                String disposition = bodyPart.getDisposition();
-
-                if(disposition != null && (disposition.equals(BodyPart.ATTACHMENT))){
-                    System.out.println("Mail have some attachment : ");
-
-                    DataHandler handler = bodyPart.getDataHandler();
-                    SaveAttachment(handler.getName(), handler.getInputStream());
-                    System.out.println("file name : " + handler.getName());
-                }
-                else{
-                    System.out.println("Content : --- " + bodyPart);
-                }
-            }
-        }
-        catch(Exception ex){
-            ex.printStackTrace();
-        }
-        finally {
-            return;
-        }
-    }
-
-    private void SaveAttachment(String name, InputStream inputStream){
-        File file = new File("/sessions/" + name);
-        try(FileOutputStream fos = new FileOutputStream(file)){
-            byte[] buf = new byte[4096];
-            int bytesRead;
-            while((bytesRead = inputStream.read(buf))!=-1) {
-                fos.write(buf, 0, bytesRead);
-            }
-        }
-        catch(Exception ex){
-            ex.printStackTrace();
-        }
-    }
-
 
     private void MultipartParse(Multipart multipartMessage) throws  Exception{
         int count = multipartMessage.getCount();
@@ -89,7 +47,10 @@ public class Unwrapper {
         for (int i = 0; i < count; i++) {
             BodyPart bodyPart = multipartMessage.getBodyPart(i);
             String[] cids = bodyPart.getHeader("Content-Id");
-            System.out.println("===> cids : " + (cids == null ? "No content id" : cids.length));
+
+            String count_ids_banner = "Count of content ids : " + (cids == null ? "No content id" : cids.length);
+            _logger.PutLog(count_ids_banner);
+            System.out.println(count_ids_banner);
 
             String cid="", content = "";
             if(cids != null && cids.length > 0){
@@ -102,14 +63,18 @@ public class Unwrapper {
                 }
             }
 
-            System.out.println(content+"---"+cid);
-            System.out.println(bodyPart.getContentType());
+            _logger.PutLog(content + "---" + cid + "\n" + bodyPart.getContentType() );
+            System.out.println(content + "---" + cid + "\n" + bodyPart.getContentType());
 
             if(bodyPart.isMimeType("text/plain")){
-                System.out.println("Simple text letter : \n\t" + bodyPart.getContent() );
+                String plain_text_banner = "[MAIL] Plain text letter : \n\t" + bodyPart.getContent();
+                _logger.PutLog(plain_text_banner);
+                System.out.println(plain_text_banner);
             }
             else if(bodyPart.isMimeType("text/html")){
-                System.out.println("HTML letter \n\t:" + bodyPart.getContent());
+                String html_text_banner = "[MAIL] HTML letter \n\t:" + bodyPart.getContent();
+                _logger.PutLog(html_text_banner);
+                System.out.println(html_text_banner);
             }
             else if (bodyPart.isMimeType("multipart/*")) {
                 Multipart part = (Multipart)bodyPart.getContent();
@@ -117,9 +82,13 @@ public class Unwrapper {
             }
             else if (bodyPart.isMimeType("application/octet-stream")) {
                 String disposition = bodyPart.getDisposition();
-                System.out.println("binary raw:" + disposition);
+
+                String binraw_banner = "[MAIL] binary raw:" + disposition;
+                _logger.PutLog(binraw_banner);
+                System.out.println(binraw_banner);
+
                 if (disposition.equalsIgnoreCase(BodyPart.ATTACHMENT)) {
-                    ProcessAtchment(bodyPart);
+                    ProcessAttachment(bodyPart);
                 }
             } else if (bodyPart.isMimeType("image/*") && !("".equals(cid))) {
                 ProcessEmbeddedImage(bodyPart);
@@ -130,17 +99,21 @@ public class Unwrapper {
     private void ProcessEmbeddedImage(BodyPart bodyPart) throws MessagingException, IOException {
         DataHandler dataHandler = bodyPart.getDataHandler();
         String name = dataHandler.getName();
-        System.out.println ("embedded picture name:" + name);
+
+        String image_banner = "[MAIL] embedded picture name:" + name;
+        _logger.PutLog(image_banner);
+        System.out.println ("[MAIL] embedded picture name:" + name);
+
         InputStream is = dataHandler.getInputStream();
         File file = new File( "/session/" + name);
         copy(is, new FileOutputStream(file));
     }
 
-    private void ProcessAtchment(BodyPart bodyPart) throws MessagingException, IOException {
+    private void ProcessAttachment(BodyPart bodyPart) throws MessagingException, IOException {
         String fileName = bodyPart.getFileName();
-        System.out.println("----------------- save attachment" + fileName);
+        System.out.println("[INFO] saving attachment" + fileName);
         InputStream is = bodyPart.getInputStream();
-        File file = new File("C:/Users/AB/Desktop/mail/"+fileName);
+        File file = new File("./mail/"+fileName);
         copy(is, new FileOutputStream(file));
     }
 
