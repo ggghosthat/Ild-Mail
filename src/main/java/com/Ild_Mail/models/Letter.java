@@ -2,16 +2,23 @@ package com.Ild_Mail.models;
 
 import com.Ild_Mail.Interfaces.ILetter;
 
-import java.io.File;
+import javax.mail.Multipart;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Letter implements ILetter {
+    private UUID _letterId = UUID.randomUUID();
     private String _subject = null;
     private String _content = null;
+    private Multipart _multipart = null;
     private List<File> _files = new ArrayList<File>();
 
-    private LetterWriter letterWriter = null;
+
+    private Note letterWriter = null;
+
+
 
     public String getSubject() {
         return this._subject;
@@ -37,6 +44,8 @@ public class Letter implements ILetter {
         this._files = files;
     }
 
+
+
     public void AddFile(File file) {
         this._files.add(file);
     }
@@ -58,11 +67,8 @@ public class Letter implements ILetter {
         this._files.set(index, file);
     }
 
-
-
-
     public List<String> ShowLetter(){
-        letterWriter = new LetterWriter(_subject, _content.split("\n"));
+        letterWriter = new Note(_subject, _content.split("\n"));
         return  letterWriter.WriteLetter();
     }
 }

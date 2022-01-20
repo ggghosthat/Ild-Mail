@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class LetterWriter {
+public class Note {
     private String _subject = null;
     private String[] _content = null;
 
@@ -15,9 +15,9 @@ public class LetterWriter {
     private String underline = null;
 
 
-    public LetterWriter(){}
+    public Note(){}
 
-    public LetterWriter(String subject, String[] content){
+    public Note(String subject, String[] content){
         _subject = subject;
         _content = content;
         maxLength = DefineLineLength();
