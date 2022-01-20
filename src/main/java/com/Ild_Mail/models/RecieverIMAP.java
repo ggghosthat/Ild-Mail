@@ -12,6 +12,14 @@ public class RecieverIMAP {
     private String host = null;
     private String address = null;
     private String password = null;
+
+    private Boolean isUsingProxy = false;
+
+    private String proxy_host = null;
+    private String proxy_port = null;
+    private String proxy_user = null;
+    private String proxy_password = null;
+
     private Session session = null;
     private Store store;
     private List<Message> messages = new ArrayList<Message>();
@@ -27,11 +35,37 @@ public class RecieverIMAP {
         CleanDirectory();
     }
 
+    public RecieverIMAP(String host, String address, String password, String proxy_host, int proxy_port, String proxy_user, String proxy_password) throws AddressException {
+        this.host = host;
+        this.address = address;
+        this.password = password;
+
+        this.proxy_host = proxy_host;
+        this.proxy_port = String.valueOf(proxy_port);
+        this.proxy_user = proxy_user;
+        this.proxy_password = proxy_password;
+
+        this.isUsingProxy = true;
+
+        CleanDirectory();
+    }
+
     private void GenerateSession(){
         Properties properties = new Properties();
         properties.setProperty("mail.imap.port","993");
         properties.setProperty("mail.imap.ssl.enable","true");
         properties.setProperty("mail.store.protocol","imaps");
+
+        if(isUsingProxy){
+            properties.setProperty("mail.imap.proxy.host",this.proxy_host);
+            properties.setProperty("mail.imap.proxy.port",this.proxy_port);
+
+            if(this.proxy_user !=  null && this.proxy_password != null && this.proxy_user !=  "" && this.proxy_password != "") {
+                properties.setProperty("mail.imap.proxy.user", this.proxy_user);
+                properties.setProperty("mail.imap.proxy.password", this.proxy_password);
+            }
+        }
+
         session = session.getDefaultInstance(properties,null);
         session.setDebug(true);
     }
@@ -69,4 +103,6 @@ public class RecieverIMAP {
         if(new File("./session").exists())
             new File("./session").delete();
     }
+
+
 }
