@@ -7,7 +7,6 @@ import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import javax.xml.crypto.KeySelectorException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +25,10 @@ public class LetterIMAP {
     private String path = "./session/" + _letterId + "/";
 
 
-    public LetterIMAP (Message message){
+    public LetterIMAP (Message message) throws MessagingException {
         this.message = message;
+        this._subject = this.message.getSubject();
+        TxtHtml2File(this._subject,".sub");
         ProcessMessage();
     }
 
@@ -51,7 +52,6 @@ public class LetterIMAP {
 
     private void ProcessMessage(){
         try {
-            this._subject = message.getSubject();
             ProcessContent(this.message.getContent());
         }
         catch(Exception ex){
@@ -64,7 +64,7 @@ public class LetterIMAP {
 
     private void ProcessContent(Object content) throws Exception{
         if(content instanceof String){
-            this._content = content.toString();
+            TxtHtml2File(content.toString(), ".txt");
             _logger.PutLog("[MAIL] Plain Text Letter > " + this._subject + "\n" + content.toString());
         }
         else if(content instanceof Multipart){
@@ -99,11 +99,12 @@ public class LetterIMAP {
 
             if(bodyPart.isMimeType("text/plain")){
                 String plain_text_banner = "[MAIL] Plain text letter : \n\t" + bodyPart.getContent();
+                TxtHtml2File(bodyPart.getContent().toString(),".txt");
                 _logger.PutLog(plain_text_banner);
             }
             else if(bodyPart.isMimeType("text/html")){
                 String html_text_banner = "[MAIL] HTML letter \n\t:" + bodyPart.getContent();
-                Html2File(bodyPart.getContent().toString());
+                TxtHtml2File(bodyPart.getContent().toString(),".html");
                 _logger.PutLog(html_text_banner);
             }
             else if (bodyPart.isMimeType("multipart/*")) {
@@ -133,7 +134,11 @@ public class LetterIMAP {
         _logger.PutLog(image_banner);
 
         InputStream is = dataHandler.getInputStream();
-        File file = new File( this.path + name);
+
+        if(new File(path + ".img").exists())
+            new File(path + ".img").mkdirs();
+
+        File file = new File( this.path + ".img/" + name);
         Save(is, new FileOutputStream(file));
     }
 
@@ -142,7 +147,11 @@ public class LetterIMAP {
         String attach_banner = "[INFO] saving attachment" + fileName;
         _logger.PutLog(attach_banner);
         InputStream is = bodyPart.getInputStream();
-        File file = new File(this.path + fileName);
+
+        if(new File(path + ".bin").exists())
+            new File(path + ".bin").mkdirs();
+
+        File file = new File(this.path + ".bin/" + fileName);
         Save(is, new FileOutputStream(file));
     }
 
@@ -158,8 +167,13 @@ public class LetterIMAP {
             is.close();
     }
 
-    private void Html2File(String htmlContent){
-        File htmlFile = new File(this.path + "mail_html.html");
-        FileUtils.writeAllText(htmlContent,htmlFile);
+    private void TxtHtml2File(String content, String ext){
+        File file;
+
+        if (!new File(path + ext).exists())
+            new File(path + ext).mkdirs();
+
+        file = new File(this.path + ext + "/mail_html" + ext);
+        FileUtils.writeAllText(content, file);
     }
 }

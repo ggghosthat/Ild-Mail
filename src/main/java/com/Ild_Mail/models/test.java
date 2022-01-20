@@ -15,7 +15,9 @@ public class test {
         System.out.println("Fetching...");
         List<Message> messages = imap.getMessages();
         System.out.println("Fetched");
-        Unwrapper unwrapper = new Unwrapper(messages);
-        unwrapper.Open();
+        for(Message mes : messages){
+            LetterIMAP letterIMAP = new LetterIMAP(mes);
+            System.out.println(letterIMAP.getSubject());
+        }
     }
 }
