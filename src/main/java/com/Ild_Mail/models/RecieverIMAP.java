@@ -2,6 +2,7 @@ package com.Ild_Mail.models;
 
 import javax.mail.*;
 import javax.mail.internet.AddressException;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class RecieverIMAP {
         this.host = host;
         this.address = address;
         this.password = password;
+        CleanDirectory();
     }
 
     private void GenerateSession(){
@@ -61,5 +63,10 @@ public class RecieverIMAP {
         catch (Exception ex){
             ex.printStackTrace();
         }
+    }
+
+    public void CleanDirectory(){
+        if(new File("./session").exists())
+            new File("./session").delete();
     }
 }
