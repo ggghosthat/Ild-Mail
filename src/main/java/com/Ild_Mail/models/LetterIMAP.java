@@ -14,8 +14,8 @@ import java.util.UUID;
 
 public class LetterIMAP {
     private UUID _letterId = UUID.randomUUID();
+    private String domain = null;
     private String _subject = null;
-    private String _content = null;
     private Multipart _multipart = null;
     private List<File> _files = new ArrayList<File>();
 
@@ -25,13 +25,18 @@ public class LetterIMAP {
     private String path = "./session/" + _letterId + "/";
 
 
-    public LetterIMAP (Message message) throws MessagingException {
+    public LetterIMAP (Message message, String domain) throws MessagingException {
+        this.domain = domain;
         this.message = message;
         this._subject = this.message.getSubject();
         TxtHtml2File(this._subject,".sub");
         ProcessMessage();
     }
 
+
+    public String getId(){
+        return String.valueOf(this._letterId);
+    }
 
     public String getSubject() {
         return this._subject;
@@ -40,14 +45,7 @@ public class LetterIMAP {
     public void setSubject(String subject) {
         this._subject = subject;
     }
-
-    public String getContent() {
-        return this._content;
-    }
-
-    public void setContent(String content) {
-        this._content = content;
-    }
+    
 
 
     private void ProcessMessage(){
