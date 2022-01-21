@@ -19,6 +19,9 @@ public class Letter implements ILetter {
     private Note letterWriter = null;
 
 
+    public String getId(){
+        return String.valueOf(this._letterId);
+    }
 
     public String getSubject() {
         return this._subject;

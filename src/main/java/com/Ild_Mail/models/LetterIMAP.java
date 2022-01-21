@@ -22,13 +22,14 @@ public class LetterIMAP {
     private Logger _logger = new Logger();
     private Message message = null;
 
-    private String path = "./session/" + _letterId + "/";
+    private String path = null;
 
 
     public LetterIMAP (Message message, String domain) throws MessagingException {
         this.domain = domain;
         this.message = message;
         this._subject = this.message.getSubject();
+        CorrectPath();
         TxtHtml2File(this._subject,".sub");
         ProcessMessage();
     }
@@ -45,7 +46,11 @@ public class LetterIMAP {
     public void setSubject(String subject) {
         this._subject = subject;
     }
-    
+
+
+    private void CorrectPath(){
+        this.path = "./session/" + "." + domain + "/" + _letterId + "/";
+    }
 
 
     private void ProcessMessage(){
