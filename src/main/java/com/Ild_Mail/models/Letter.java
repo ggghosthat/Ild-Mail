@@ -43,17 +43,20 @@ public class Letter implements ILetter {
         return this._files;
     }
 
+    @Override
     public void setFiles(List<File> files) {
-        this._files = files;
+        if (_files == null)
+            _files = files;
+        else
+            _files.addAll(files);
     }
-
 
 
     public void AddFile(File file) {
         this._files.add(file);
     }
 
-    public void Clear() {
+    public void ClearFileStructer() {
         this._files.clear();
         this._files = null;
     }
@@ -63,7 +66,10 @@ public class Letter implements ILetter {
     }
 
     public void InsertFile(int index, File file) throws Exception {
-       throw new Exception("Method without anything");
+       if (_files.size() > 0)
+           _files.set(index, file);
+       else
+           _files.add(file);
     }
 
     public void ModifyFile(int index, File file) {
@@ -72,6 +78,6 @@ public class Letter implements ILetter {
 
     public List<String> ShowLetter(){
         letterWriter = new Note(_subject, _content.split("\n"));
-        return  letterWriter.WriteLetter();
+        return  letterWriter.WriteNote();
     }
 }

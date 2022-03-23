@@ -52,7 +52,7 @@ public class Note {
         }
     }
 
-    public List<String> WriteLetter(){
+    public List<String> WriteNote(){
         List<String> raw = new ArrayList<String>();
 
         raw.add(subjectHeader + "\n");
