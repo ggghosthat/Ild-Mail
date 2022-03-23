@@ -53,6 +53,7 @@ public class Sender {
 
 
     //These methods are preparing message to send
+    //Send simple text message
     public void PrepareTextMessage(String subject, String body) throws MessagingException {
         message = new MimeMessage(session);
         message.setFrom(fromAddress);
@@ -62,6 +63,7 @@ public class Sender {
         message.setText(body);
     }
 
+    //Send text message with file
     public void PrepareFile(String subject, String text, File file) throws MessagingException, IOException {
         message = new MimeMessage(session);
         MimeBodyPart mesPart = new MimeBodyPart();
@@ -82,6 +84,7 @@ public class Sender {
         message.setRecipients(Message.RecipientType.TO, new InternetAddress[]{toAddress});
     }
 
+    //Send message predefined by special struct (Letter.java)
     public void WrapEnvelope(Letter letter) throws MessagingException {
         message = letter.getMessage();
         message.setFrom(fromAddress);
@@ -122,30 +125,8 @@ public class Sender {
         transport.close();
     }
 
-
     //Sending mail process
-    public void DropMessage(String subject, String body){
-        try {
-            GenerateSession();
-
-            System.out.println("Sending message ...");
-            TransferreMessage();
-            System.out.println("Message was sent successfuly");
-
-        }
-        catch(Exception ex) {
-            ex.printStackTrace();
-        }
-        finally {
-            fromAddress = null;
-            toAddress = null;
-            session = null;
-            message = null;
-            return;
-        }
-    }
-
-    public void AttachHtml(String subject, String text, File file) throws IOException, MessagingException {
+    public void SendMessage(String subject, String body){
         try {
             GenerateSession();
 
