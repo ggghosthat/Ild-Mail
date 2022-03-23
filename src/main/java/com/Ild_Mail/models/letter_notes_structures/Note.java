@@ -1,4 +1,4 @@
-package com.Ild_Mail.models;
+package com.Ild_Mail.models.letter_notes_structures;
 
 import java.util.ArrayList;
 import java.util.Collections;

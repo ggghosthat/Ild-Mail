@@ -1,4 +1,4 @@
-package com.Ild_Mail.models;
+package com.Ild_Mail.models.letter_notes_structures;
 
 import com.Ild_Mail.Interfaces.ILetter;
 

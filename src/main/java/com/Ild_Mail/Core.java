@@ -1,7 +1,7 @@
 package com.Ild_Mail;
 
-import com.Ild_Mail.models.Letter;
-import com.Ild_Mail.models.Sender;
+import com.Ild_Mail.models.letter_notes_structures.Letter;
+import com.Ild_Mail.models.smtp_send.Sender;
 
 import javax.mail.internet.AddressException;
 import java.util.ArrayList;

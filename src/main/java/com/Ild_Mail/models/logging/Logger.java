@@ -1,4 +1,4 @@
-package com.Ild_Mail.models;
+package com.Ild_Mail.models.logging;
 
 public class Logger {
     private static final StringBuilder strBuilder = new StringBuilder();

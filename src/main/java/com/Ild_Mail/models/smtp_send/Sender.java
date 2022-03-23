@@ -1,4 +1,4 @@
-package com.Ild_Mail.models;
+package com.Ild_Mail.models.smtp_send;
 
 import javax.mail.*;
 import javax.mail.internet.*;

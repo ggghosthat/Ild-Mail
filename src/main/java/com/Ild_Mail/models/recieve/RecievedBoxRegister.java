@@ -1,5 +1,7 @@
-package com.Ild_Mail.models;
+package com.Ild_Mail.models.recieve;
 
+import com.Ild_Mail.models.letter_notes_structures.Letter;
+import com.Ild_Mail.models.letter_notes_structures.LetterIMAP;
 import org.parboiled.common.FileUtils;
 
 import java.io.File;
