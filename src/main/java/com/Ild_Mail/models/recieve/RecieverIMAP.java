@@ -50,6 +50,8 @@ public class RecieverIMAP {
         CleanDirectory();
     }
 
+
+
     private void GenerateSession(){
         Properties properties = new Properties();
         properties.setProperty("mail.imap.port","993");
@@ -83,8 +85,8 @@ public class RecieverIMAP {
         folder.open(Folder.READ_WRITE);
         for (int i =1; i < count; i++){
             messages.add(folder.getMessage(i));
-
         }
+
         System.out.println("All letters were recieved !");
     }
 
@@ -98,6 +100,7 @@ public class RecieverIMAP {
             ex.printStackTrace();
         }
     }
+
 
     public void CleanDirectory(){
         if(new File("./session").exists())
