@@ -48,7 +48,7 @@ public class LetterIMAP {
         this._subject = subject;
     }
 
-
+    //Prepare income-message(IMAP)'s allocation path
     private void CorrectPath(){
         this.path = "./session/" + "." + domain + "/" + _letterId + "/";
     }
@@ -66,6 +66,8 @@ public class LetterIMAP {
         }
     }
 
+
+    //These methods process came messages (IMAP)
     private void ProcessContent(Object content) throws Exception{
         if(content instanceof String){
             TxtHtml2File(content.toString(), ".txt");
@@ -159,6 +161,7 @@ public class LetterIMAP {
         Save(is, new FileOutputStream(file));
     }
 
+
     private void Save(InputStream is, OutputStream os) throws IOException {
         byte[] bytes = new byte[1024];
         int len = 0;
@@ -170,6 +173,7 @@ public class LetterIMAP {
         if (is != null)
             is.close();
     }
+
 
     private void TxtHtml2File(String content, String ext){
         File file;

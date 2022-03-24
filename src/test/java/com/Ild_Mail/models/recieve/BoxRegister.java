@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RecievedBoxRegister {
+public class BoxRegister {
     private List<LetterIMAP> imapLetter = new ArrayList<LetterIMAP>();
 
     private HashMap<String, String> _struct = new HashMap<String, String>();
@@ -19,12 +19,16 @@ public class RecievedBoxRegister {
         return this.imapLetter;
     }
 
+
+
+    //Adding letter from struct
     public void AddImap(LetterIMAP imap){
         this.imapLetter.add(imap);
 
         System.out.println(String.format("[INFO] Recieved IMAP Message with id : %s was added", imap.getId()));
     }
 
+    //Removing letter from struct
     public void RemoveImap(Letter imap){
         if(this.imapLetter.contains(imap)) {
             this.imapLetter.remove(imap);
@@ -36,15 +40,14 @@ public class RecievedBoxRegister {
     }
 
 
-
+    //Gathering IMAP messages to special struct
     private void CompileSend(){
         for (LetterIMAP imap : this.imapLetter){
             _struct.put(imap.getSubject(),imap.getId());
         }
     }
 
-
-
+    //Dump struct to filesystem
     public void SaveStruct(){
         if((_struct != null) && (_struct.size() != 0)) {
             for (Map.Entry<String, String> entry : _struct.entrySet()) {
@@ -53,6 +56,7 @@ public class RecievedBoxRegister {
         }
     }
 
+    //Search struct in filesystem
     private void OpenStruct(){
         String[] lines = Read().split("\n");
 
@@ -62,13 +66,14 @@ public class RecievedBoxRegister {
         }
     }
 
-
+    //Flushing struct to filesystem
     private void Write(String key, String value){
         String content = String.format("%s1|%s2\n",key,value);
         File file = new File("./session/srct.txt");
         FileUtils.writeAllText(content, file);
     }
 
+    //Reading struct from filesystem
     private String Read(){
         if(new File("./session/srct.txt").exists())
             return FileUtils.readAllText("./session/srct.txt");

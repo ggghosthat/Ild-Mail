@@ -5,10 +5,7 @@ import com.Ild_Mail.models.letter_notes_structures.LetterIMAP;
 import org.parboiled.common.FileUtils;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RecievedBoxRegister {
     private List<LetterIMAP> imapLetter = new ArrayList<LetterIMAP>();
