@@ -80,7 +80,7 @@ public class ConfigPOJO {
     }
 
 
-    private class MailProxy{
+    public class MailProxy{
         private String _host;
         private String _port;
         private String _user;

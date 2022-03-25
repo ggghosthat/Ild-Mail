@@ -37,14 +37,15 @@ public class Sender {
         this.host = host;
     }
 
-    public Sender(String from, String password, String to, String host, String proxy_host, int proxy_port, String proxy_user, String proxy_password) throws AddressException {
+    public Sender(String from, String password, String to, String host,
+                  String proxy_host, String proxy_port, String proxy_user, String proxy_password) throws AddressException {
         fromAddress = new InternetAddress(from);
         toAddress = new InternetAddress(to);
         this.password = password;
         this.host = host;
 
         this.proxy_host = proxy_host;
-        this.proxy_port = String.valueOf(proxy_port);
+        this.proxy_port = proxy_port;
         this.proxy_user = proxy_user;
         this.proxy_password = proxy_password;
 

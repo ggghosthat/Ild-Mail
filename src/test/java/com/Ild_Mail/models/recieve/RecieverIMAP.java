@@ -28,6 +28,7 @@ public class RecieverIMAP {
         return this.messages;
     }
 
+
     public RecieverIMAP(String host, String address, String password) throws AddressException {
         this.host = host;
         this.address = address;
@@ -35,13 +36,14 @@ public class RecieverIMAP {
         CleanDirectory();
     }
 
-    public RecieverIMAP(String host, String address, String password, String proxy_host, int proxy_port, String proxy_user, String proxy_password) throws AddressException {
+    public RecieverIMAP(String host, String address, String password,
+                        String proxy_host, String proxy_port, String proxy_user, String proxy_password) throws AddressException {
         this.host = host;
         this.address = address;
         this.password = password;
 
         this.proxy_host = proxy_host;
-        this.proxy_port = String.valueOf(proxy_port);
+        this.proxy_port = proxy_port;
         this.proxy_user = proxy_user;
         this.proxy_password = proxy_password;
 
