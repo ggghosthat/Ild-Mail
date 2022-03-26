@@ -51,6 +51,9 @@ public class Sender {
         this.isUsingProxy = true;
     }
 
+    public Sender(String smtp_source, String smtp_password, String smtp_target, String smtp_host, String host, String port, String user, String password) {
+    }
+
 
     //These methods are preparing message to send
     //Send simple text message

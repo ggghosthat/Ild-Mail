@@ -2,11 +2,13 @@ package com.Ild_Mail.models.input_reader;
 
 
 import com.Ild_Mail.models.input_reader.POJO.ConfigPOJO;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.Ild_Mail.models.smtp_send.Sender;
 import com.Ild_Mail.models.recieve.*;
+import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 
 import javax.mail.internet.AddressException;
 import java.io.File;
@@ -31,13 +33,18 @@ public class InputReader {
     private static ObjectMapper defaultObjectMapper(){
         ObjectMapper defaultMapper = new ObjectMapper();
         defaultMapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+        defaultMapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
         return defaultMapper;
     }
 
     //Parse JSON staff to Config handler
-    public static void parseNode(File jsonFile, Class<ConfigPOJO> config_pojo_clazz) throws IOException {
-        JsonNode node = objectMapper.readTree(jsonFile);
+    public static void parseNode( Class<ConfigPOJO> config_pojo_clazz) throws IOException {
+        JsonNode node = objectMapper.readTree(new File(path_config));
         configPOJO = objectMapper.treeToValue(node, config_pojo_clazz);
+    }
+
+    public static ConfigPOJO getConfigPOJO() {
+        return configPOJO;
     }
 
     //Sender(SMTP) initialization

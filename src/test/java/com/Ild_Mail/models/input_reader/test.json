@@ -1,0 +1,17 @@
+{
+  "SMTP_HOST": "smtp_host",
+  "SMTP_SOURCE": "smtp_source",
+  "SMTP_PASSWORD": "smtp_password",
+  "SMTP_TARGET": "smtp_target",
+
+  "IMAP_HOST": "imap_host",
+  "IMAP_ADDRESS": "imap_address",
+  "IMAP_PASSWORD": "imap_password",
+
+  "mailProxy": {
+    "_host": "proxHost",
+    "_port": "proxPort",
+    "_user": "proxUser",
+    "_password": "proxPassword"
+  }
+}

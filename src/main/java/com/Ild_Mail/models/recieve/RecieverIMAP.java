@@ -24,6 +24,9 @@ public class RecieverIMAP {
     private Store store;
     private List<Message> messages = new ArrayList<Message>();
 
+    public RecieverIMAP(String imap_host, String imap_address, String imap_password, String host, String port, String user, String password) {
+    }
+
     public List<Message> getMessages (){
         return this.messages;
     }
