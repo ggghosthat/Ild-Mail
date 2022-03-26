@@ -24,6 +24,8 @@ public class Letter implements ILetter {
     private Note letterWriter = null;
 
 
+
+
     public String getId(){
         return String.valueOf(this._letterId);
     }
@@ -56,16 +58,13 @@ public class Letter implements ILetter {
             _files.addAll(files);
     }
 
-    public Message getMessage(){
-        return this._message;
-    }
 
 
     public void AddFile(File file) {
         this._files.add(file);
     }
 
-    public void ClearFileStructer() {
+    public void ClearFileStruction() {
         this._files.clear();
         this._files = null;
     }
@@ -90,6 +89,11 @@ public class Letter implements ILetter {
         return  letterWriter.WriteNote();
     }
 
+
+
+    public Message getMessage(){
+        return this._message;
+    }
 
     public void PrepareMimeBody() throws Exception {
         MimeBodyPart _mimeBody = new MimeBodyPart();

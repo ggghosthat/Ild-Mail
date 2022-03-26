@@ -14,6 +14,11 @@ import javax.mail.internet.AddressException;
 import java.io.File;
 import java.io.IOException;
 
+enum LetterWriteMode{
+    NoteMode,
+    LoadMode
+}
+
 public class InputReader {
     //Jackson JSON handler
     private static ObjectMapper objectMapper = defaultObjectMapper();
@@ -29,6 +34,8 @@ public class InputReader {
     public InputReader(String path_config){
         this.path_config = path_config;
     }
+
+
 
     private static ObjectMapper defaultObjectMapper(){
         ObjectMapper defaultMapper = new ObjectMapper();
@@ -85,6 +92,17 @@ public class InputReader {
                                             configPOJO.getMailProxy().get_password());
         }
         return imap_reciever;
+    }
+
+    public void TakeLetter(LetterWriteMode letterMode){
+        switch(letterMode){
+            case LoadMode:
+                break;
+            case NoteMode:
+                break;
+            default:
+                break;
+        }
     }
 
 }

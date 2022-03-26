@@ -64,7 +64,7 @@ public class Sender {
         message.setText(body);
     }
 
-    //Send text message with file
+    //Send text message with single file
     public void PrepareFile(String subject, String text, File file) throws MessagingException, IOException {
         message = new MimeMessage(session);
         MimeBodyPart mesPart = new MimeBodyPart();
@@ -127,7 +127,7 @@ public class Sender {
     }
 
     //Sending mail process
-    public void SendMessage(String subject, String body){
+    public void SendMessage(){
         try {
             GenerateSession();
 

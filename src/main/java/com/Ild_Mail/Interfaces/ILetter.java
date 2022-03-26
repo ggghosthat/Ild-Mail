@@ -14,7 +14,7 @@ public interface ILetter {
     List<File> getFiles();
     void setFiles(List<File> files);
     void AddFile(File file);
-    void ClearFileStructer();
+    void ClearFileStruction();
     void RemoveFile(int index);
     void InsertFile(int index, File file) throws Exception;
     void ModifyFile(int index, File file);
