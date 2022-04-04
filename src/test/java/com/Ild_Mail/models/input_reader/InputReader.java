@@ -30,10 +30,25 @@ public class InputReader {
     private static Sender smtp_sender;
     private static RecieverIMAP imap_reciever;
 
+    //Letter pad for <NoteMode>
+    private LetterPad pad;
+
+    //path to sending letter
+    private String path;
+
+
+
 
     public InputReader(String path_config){
         this.path_config = path_config;
     }
+
+    public InputReader(String path_config, String path){
+        this.path_config = path_config;
+        this.path = path;
+    }
+
+
 
 
 
@@ -54,9 +69,11 @@ public class InputReader {
         return configPOJO;
     }
 
+
+
     //Sender(SMTP) initialization
     public static Sender EnableSender() throws AddressException {
-        if (configPOJO.getMailProxy() != null) {
+        if (configPOJO.getMailProxy() == null) {
             smtp_sender = new Sender(configPOJO.getSMTP_SOURCE(),
                     configPOJO.getSMTP_PASSWORD(),
                     configPOJO.getSMTP_TARGET(),
@@ -77,7 +94,7 @@ public class InputReader {
 
     //Reciever(IMAP) initialization
     public static RecieverIMAP EnableReciever() throws AddressException {
-        if (configPOJO.getMailProxy() != null) {
+        if (configPOJO.getMailProxy() == null) {
             imap_reciever= new RecieverIMAP(configPOJO.getIMAP_HOST(),
                                             configPOJO.getIMAP_ADDRESS(),
                                             configPOJO.getIMAP_PASSWORD());
@@ -94,11 +111,16 @@ public class InputReader {
         return imap_reciever;
     }
 
+
+
+
     public void TakeLetter(LetterWriteMode letterMode){
         switch(letterMode){
             case LoadMode:
+                pad = new LetterPad(path);
                 break;
             case NoteMode:
+                pad = new LetterPad();
                 break;
             default:
                 break;

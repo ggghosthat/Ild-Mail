@@ -19,6 +19,10 @@ public class LetterPad {
         ReadFile(path);
     }
 
+    
+    public String GetStaff(){
+        return  _staff;
+    }
 
 
     //read message from file
@@ -74,10 +78,6 @@ public class LetterPad {
         catch(Exception ex){
             ex.printStackTrace();
         }
-
-    }
-
-    public void GetStaff(){
 
     }
 }
