@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 public class RecieverIMAP {
     private String host = null;
@@ -96,11 +98,11 @@ public class RecieverIMAP {
         System.out.println("All letters were recieved !");
     }
 
-    private void MessageToLetterImap(){
-        for (Message message : messages){
-            Thread docker = new Docker(message);
-            docker.run();
-        }
+    private void ConvertIncomes(){
+        Supplier<List<LetterIMAP>> task = (Supplier<List<LetterIMAP>>) new Docker(messages).get();
+
+        CompletableFuture<List<LetterIMAP>> result =
+                                         CompletableFuture.supplyAsync(task);
     }
 
     public void LookIntoBox(){
@@ -113,7 +115,6 @@ public class RecieverIMAP {
             ex.printStackTrace();
         }
     }
-
 
     public void CleanDirectory(){
         if(new File("./session").exists())

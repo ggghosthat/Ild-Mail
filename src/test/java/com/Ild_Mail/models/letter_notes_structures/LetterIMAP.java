@@ -53,7 +53,7 @@ public class LetterIMAP {
         this.path = "./session/" + "." + domain + "/" + _letterId + "/";
     }
 
-
+    //Process income messages
     private void ProcessMessage(){
         try {
             ProcessContent(this.message.getContent());
@@ -173,7 +173,6 @@ public class LetterIMAP {
         if (is != null)
             is.close();
     }
-
 
     private void TxtHtml2File(String content, String ext){
         File file;
