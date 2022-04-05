@@ -67,7 +67,7 @@ public class Letter implements ILetter {
         this._files.add(file);
     }
 
-    public void ClearFileStruction() {
+    public void ClearFileStructer() {
         this._files.clear();
         this._files = null;
     }

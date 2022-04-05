@@ -59,20 +59,23 @@ public class Letter implements ILetter {
     }
 
 
-
+    @Override
     public void AddFile(File file) {
         this._files.add(file);
     }
 
-    public void ClearFileStruction() {
+    @Override
+    public void ClearFileStructer() {
         this._files.clear();
         this._files = null;
     }
 
+    @Override
     public void RemoveFile(int index) {
         this._files.remove(index);
     }
 
+    @Override
     public void InsertFile(int index, File file) throws Exception {
        if (_files.size() > 0)
            _files.set(index, file);
@@ -80,6 +83,7 @@ public class Letter implements ILetter {
            _files.add(file);
     }
 
+    @Override
     public void ModifyFile(int index, File file) {
         this._files.set(index, file);
     }

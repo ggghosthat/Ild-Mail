@@ -15,13 +15,13 @@ import java.util.UUID;
 
 public class LetterIMAP {
     private UUID _letterId = UUID.randomUUID();
-    private String domain = null;
-    private String _subject = null;
+    private String domain;
+    private String _subject;
     private Multipart _multipart = null;
     private List<File> _files = new ArrayList<File>();
 
     private Logger _logger = new Logger();
-    private Message message = null;
+    private Message message;
 
     private String path = null;
 

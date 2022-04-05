@@ -4,6 +4,8 @@ import com.Ild_Mail.models.letter_notes_structures.Letter;
 import com.Ild_Mail.models.letter_notes_structures.LetterIMAP;
 import org.parboiled.common.FileUtils;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,27 +13,33 @@ import java.util.List;
 import java.util.Map;
 
 public class BoxRegister {
-    private List<LetterIMAP> imapLetter = new ArrayList<LetterIMAP>();
+    private static List<LetterIMAP> imapLetters = new ArrayList<LetterIMAP>();
 
-    private HashMap<String, String> _struct = new HashMap<String, String>();
+    private static HashMap<String, String> _struct = new HashMap<String, String>();
     
     public List<LetterIMAP> GetImapLetters(){
-        return this.imapLetter;
+        return this.imapLetters;
     }
 
 
 
-    //Adding letter from struct
-    public void AddImap(LetterIMAP imap){
-        this.imapLetter.add(imap);
 
+    //Adding incoming letter
+    public void AddImap(LetterIMAP imap){
+        this.imapLetters.add(imap);
         System.out.println(String.format("[INFO] Recieved IMAP Message with id : %s was added", imap.getId()));
+    }
+
+    public void AddImap(Message message) throws MessagingException {
+        LetterIMAP letter = new LetterIMAP(message, message.getFolder().getName());
+        imapLetters.add(letter);
+        System.out.println(String.format("[INFO] Recieved IMAP Message with id : %s was added", letter.getId()));
     }
 
     //Removing letter from struct
     public void RemoveImap(Letter imap){
-        if(this.imapLetter.contains(imap)) {
-            this.imapLetter.remove(imap);
+        if(this.imapLetters.contains(imap)) {
+            this.imapLetters.remove(imap);
             System.out.println(String.format("[INFO] Recieved IMAP Message with id : %s was removed", imap.getId()));
         }
         else{
@@ -39,10 +47,20 @@ public class BoxRegister {
         }
     }
 
+    public void RemoveImap(Message message) throws MessagingException{
+        LetterIMAP letter = new LetterIMAP(message, message.getFolder().getName());
+        if(this.imapLetters.contains(letter)) {
+            this.imapLetters.remove(letter);
+            System.out.println(String.format("[INFO] Recieved IMAP Message with id : %s was removed", letter.getId()));
+        }
+        else{
+            System.out.println(String.format("[INFO] Recieved IMAP Message with id : %s does not exist", letter.getId()));
+        }
+    }
 
     //Gathering IMAP messages to special struct
     private void CompileSend(){
-        for (LetterIMAP imap : this.imapLetter){
+        for (LetterIMAP imap : this.imapLetters){
             _struct.put(imap.getSubject(),imap.getId());
         }
     }

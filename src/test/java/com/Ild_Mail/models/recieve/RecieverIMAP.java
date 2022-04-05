@@ -1,5 +1,8 @@
 package com.Ild_Mail.models.recieve;
 
+import com.Ild_Mail.models.letter_notes_structures.Docker;
+import com.Ild_Mail.models.letter_notes_structures.LetterIMAP;
+
 import javax.mail.*;
 import javax.mail.internet.AddressException;
 import java.io.File;
@@ -82,6 +85,7 @@ public class RecieverIMAP {
     private void LookFolders() throws MessagingException, IOException {
         System.out.println("Please, wait ...");
         Folder folder = store.getFolder("INBOX");
+        LetterIMAP letter;
         int count = folder.getMessageCount();
 
         folder.open(Folder.READ_WRITE);
@@ -90,6 +94,13 @@ public class RecieverIMAP {
         }
 
         System.out.println("All letters were recieved !");
+    }
+
+    private void MessageToLetterImap(){
+        for (Message message : messages){
+            Thread docker = new Docker(message);
+            docker.run();
+        }
     }
 
     public void LookIntoBox(){
