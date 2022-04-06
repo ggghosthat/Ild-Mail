@@ -30,7 +30,6 @@ public class RecieverIMAP {
     private Store store;
     private List<Message> messages = new ArrayList<Message>();
 
-    private Thread convertObserver;
     private List<LetterIMAP> convertedLetters;
 
     public List<Message> getMessages (){
@@ -65,6 +64,8 @@ public class RecieverIMAP {
 
 
 
+
+    //generating mail session for mail server connection
     private void GenerateSession(){
         Properties properties = new Properties();
         properties.setProperty("mail.imap.port","993");
@@ -85,11 +86,13 @@ public class RecieverIMAP {
         session.setDebug(true);
     }
 
+    //initializing session store for communicating with mail messages
     private void InitStore() throws MessagingException {
         store = session.getStore("imaps");
         store.connect(host, address, password);
     }
 
+    //Fetching messages from mail box & converting
     private void LookFolders() throws MessagingException, IOException {
         System.out.println("Please, wait ...");
         Folder folder = store.getFolder("INBOX");
@@ -100,13 +103,15 @@ public class RecieverIMAP {
         for (int i =1; i < count; i++){
             messages.add(folder.getMessage(i));
         }
-        convertObserver = new Thread(this::ConvertIncomes);
-        convertObserver.run();
+
+        ConvertIncomesAsynch();
 
         System.out.println("All letters were recieved !");
     }
 
-    private void ConvertIncomes(){
+    //Converting incomes to LetterIMAP struct
+    private void ConvertIncomesAsynch(){
+        System.out.println("[INFO] - Working on converting income mail messages ...");
         Supplier<List<LetterIMAP>> task = (Supplier<List<LetterIMAP>>) new Docker(messages).get();
 
         CompletableFuture<List<LetterIMAP>> result =
@@ -115,12 +120,12 @@ public class RecieverIMAP {
 
         try {
             convertedLetters = result.get();
+            System.out.println("[INFO] - converting income mail messages completed !");
         } catch (InterruptedException interruptedException) {
             interruptedException.printStackTrace();
         } catch (ExecutionException executionException) {
             executionException.printStackTrace();
         }
-
     }
 
     public void LookIntoBox(){
