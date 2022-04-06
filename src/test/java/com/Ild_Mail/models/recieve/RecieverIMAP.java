@@ -113,19 +113,12 @@ public class RecieverIMAP {
                                          CompletableFuture.supplyAsync(task);
 
 
-        while (true) {
-            try {
-                if (result.isDone()) {
-                    convertedLetters = result.get();
-                    break;
-                }
-            }
-            catch (ExecutionException executionException) {
-                executionException.printStackTrace();
-            }
-            catch (InterruptedException interruptedException) {
-                interruptedException.printStackTrace();
-            }
+        try {
+            convertedLetters = result.get();
+        } catch (InterruptedException interruptedException) {
+            interruptedException.printStackTrace();
+        } catch (ExecutionException executionException) {
+            executionException.printStackTrace();
         }
 
     }
