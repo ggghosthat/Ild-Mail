@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
 public class RecieverIMAP {
@@ -29,9 +30,14 @@ public class RecieverIMAP {
     private Store store;
     private List<Message> messages = new ArrayList<Message>();
 
+    private Thread convertObserver;
+    private List<LetterIMAP> convertedLetters;
+
     public List<Message> getMessages (){
         return this.messages;
     }
+
+
 
 
     public RecieverIMAP(String host, String address, String password) throws AddressException {
@@ -94,6 +100,8 @@ public class RecieverIMAP {
         for (int i =1; i < count; i++){
             messages.add(folder.getMessage(i));
         }
+        convertObserver = new Thread(this::ConvertIncomes);
+        convertObserver.run();
 
         System.out.println("All letters were recieved !");
     }
@@ -103,6 +111,23 @@ public class RecieverIMAP {
 
         CompletableFuture<List<LetterIMAP>> result =
                                          CompletableFuture.supplyAsync(task);
+
+
+        while (true) {
+            try {
+                if (result.isDone()) {
+                    convertedLetters = result.get();
+                    break;
+                }
+            }
+            catch (ExecutionException executionException) {
+                executionException.printStackTrace();
+            }
+            catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
+        }
+
     }
 
     public void LookIntoBox(){
