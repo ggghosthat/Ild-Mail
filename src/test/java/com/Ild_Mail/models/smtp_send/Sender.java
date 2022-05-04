@@ -130,11 +130,9 @@ public class Sender {
     public void SendMessage(){
         try {
             GenerateSession();
-
             System.out.println("Sending message ...");
             TransferreMessage();
             System.out.println("Message was sent successfuly");
-
         }
         catch(Exception ex) {
             ex.printStackTrace();

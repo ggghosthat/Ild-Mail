@@ -1,4 +1,4 @@
-package com.Ild_Mail.models.dump_structures;
+package com.Ild_Mail.models.recieve;
 
 import com.Ild_Mail.models.logging.Logger;
 
@@ -11,7 +11,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Unwrapper {
+public class Unwrapper implements Runnable {
     List<Message> messages;
 
     String savePathway;
@@ -38,11 +38,20 @@ public class Unwrapper {
                 _logger.PutLog("[MAIL] Multipart Letter > " + mes.getSubject());
                 Multipart multipart = (Multipart) content;
                 MultipartParse(multipart);
-
             }
         }
     }
 
+    @Override
+    public void run() {
+        try {
+            Open();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    //This methods're parsing incomes
     private void MultipartParse(Multipart multipartMessage) throws  Exception{
         int count = multipartMessage.getCount();
 
@@ -130,5 +139,7 @@ public class Unwrapper {
         if (is != null)
             is.close();
     }
+
+
 }
 

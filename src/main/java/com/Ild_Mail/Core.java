@@ -44,7 +44,7 @@ public class Core {
         letter.setSubject(subject);
         letter.setContent(ContentFromLines());
 
-        sender.SendMessage(subject,letter.getContent());
+        sender.SendMessage();
     }
 
     private static void PrepareLetter() {

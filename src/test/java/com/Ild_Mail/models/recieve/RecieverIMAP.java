@@ -15,22 +15,24 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
 public class RecieverIMAP {
-    private String host = null;
-    private String address = null;
-    private String password = null;
+    private static String host = null;
+    private static String address = null;
+    private static String password = null;
 
-    private Boolean isUsingProxy = false;
+    private static Boolean isUsingProxy = false;
 
-    private String proxy_host = null;
-    private String proxy_port = null;
-    private String proxy_user = null;
-    private String proxy_password = null;
+    private static String proxy_host = null;
+    private static String proxy_port = null;
+    private static String proxy_user = null;
+    private static String proxy_password = null;
 
-    private Session session = null;
-    private Store store;
-    private List<Message> messages = new ArrayList<Message>();
+    private static Session session = null;
+    private static Store store;
+    private static Unwrapper unwrapper;
 
-    private List<LetterIMAP> convertedLetters;
+
+    private static List<Message> messages = new ArrayList<Message>();
+    private static List<LetterIMAP> convertedLetters;
 
     public List<Message> getMessages (){
         return this.messages;
@@ -43,7 +45,6 @@ public class RecieverIMAP {
         this.host = host;
         this.address = address;
         this.password = password;
-        CleanDirectory();
     }
 
     public RecieverIMAP(String host, String address, String password,
@@ -58,8 +59,6 @@ public class RecieverIMAP {
         this.proxy_password = proxy_password;
 
         this.isUsingProxy = true;
-
-        CleanDirectory();
     }
 
 
@@ -96,7 +95,6 @@ public class RecieverIMAP {
     private void LookFolders() throws MessagingException, IOException {
         System.out.println("Please, wait ...");
         Folder folder = store.getFolder("INBOX");
-        LetterIMAP letter;
         int count = folder.getMessageCount();
 
         folder.open(Folder.READ_WRITE);
@@ -104,29 +102,27 @@ public class RecieverIMAP {
             messages.add(folder.getMessage(i));
         }
 
-        ConvertIncomesAsynch();
+        ConvertIncomesAsync();
 
         System.out.println("All letters were recieved !");
     }
 
     //Converting incomes to LetterIMAP struct
-    private void ConvertIncomesAsynch(){
-        System.out.println("[INFO] - Working on converting income mail messages ...");
-        Supplier<List<LetterIMAP>> task = (Supplier<List<LetterIMAP>>) new Docker(messages).get();
-
-        CompletableFuture<List<LetterIMAP>> result =
-                                         CompletableFuture.supplyAsync(task);
-
+    private void ConvertIncomesAsync(){
+        System.out.println("[INFO] - Unwrapping income mail messages ...");
 
         try {
-            convertedLetters = result.get();
+            CompletableFuture<Void> result = CompletableFuture.runAsync(unwrapper);
+            System.out.println("[INFO] - converting income mail messages ...");
+
+            messages = null;
             System.out.println("[INFO] - converting income mail messages completed !");
-        } catch (InterruptedException interruptedException) {
-            interruptedException.printStackTrace();
-        } catch (ExecutionException executionException) {
-            executionException.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
     }
+
+
 
     public void LookIntoBox(){
         try{
@@ -139,10 +135,6 @@ public class RecieverIMAP {
         }
     }
 
-    public void CleanDirectory(){
-        if(new File("./session").exists())
-            new File("./session").delete();
-    }
-
+    //TODO:Need method for cleaning processes
 
 }

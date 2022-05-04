@@ -129,7 +129,7 @@ public class Sender {
     }
 
     //Sending mail process
-    public void SendMessage(String subject, String body){
+    public void SendMessage(){
         try {
             GenerateSession();
 

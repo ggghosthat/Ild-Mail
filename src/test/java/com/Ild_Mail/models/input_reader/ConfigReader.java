@@ -19,7 +19,7 @@ enum LetterWriteMode{
     LoadMode
 }
 
-public class InputReader {
+public class ConfigReader {
     //Jackson JSON handler
     private static ObjectMapper objectMapper = defaultObjectMapper();
 
@@ -39,11 +39,11 @@ public class InputReader {
 
 
 
-    public InputReader(String path_config){
+    public ConfigReader(String path_config){
         this.path_config = path_config;
     }
 
-    public InputReader(String path_config, String path){
+    public ConfigReader(String path_config, String path){
         this.path_config = path_config;
         this.path = path;
     }
@@ -72,7 +72,7 @@ public class InputReader {
 
 
     //Sender(SMTP) initialization
-    public static Sender EnableSender() throws AddressException {
+    public Sender EnableSender() throws AddressException {
         if (configPOJO.getMailProxy() == null) {
             smtp_sender = new Sender(configPOJO.getSMTP_SOURCE(),
                     configPOJO.getSMTP_PASSWORD(),
@@ -93,7 +93,7 @@ public class InputReader {
     }
 
     //Reciever(IMAP) initialization
-    public static RecieverIMAP EnableReciever() throws AddressException {
+    public RecieverIMAP EnableReciever() throws AddressException {
         if (configPOJO.getMailProxy() == null) {
             imap_reciever= new RecieverIMAP(configPOJO.getIMAP_HOST(),
                                             configPOJO.getIMAP_ADDRESS(),
