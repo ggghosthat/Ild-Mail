@@ -1,18 +1,14 @@
 package com.Ild_Mail.models.recieve;
 
-import com.Ild_Mail.models.letter_notes_structures.Docker;
 import com.Ild_Mail.models.letter_notes_structures.LetterIMAP;
 
 import javax.mail.*;
 import javax.mail.internet.AddressException;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Supplier;
 
 public class RecieverIMAP {
     private static String host = null;
@@ -112,9 +108,8 @@ public class RecieverIMAP {
         System.out.println("[INFO] - Unwrapping income mail messages ...");
 
         try {
-            CompletableFuture<Void> result = CompletableFuture.runAsync(unwrapper);
             System.out.println("[INFO] - converting income mail messages ...");
-
+            CompletableFuture<Void> result = CompletableFuture.runAsync(unwrapper);
             messages = null;
             System.out.println("[INFO] - converting income mail messages completed !");
         } catch (Exception exception) {
