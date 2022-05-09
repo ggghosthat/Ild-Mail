@@ -110,6 +110,8 @@ public class RecieverIMAP {
         try {
             System.out.println("[INFO] - converting income mail messages ...");
             CompletableFuture<Void> result = CompletableFuture.runAsync(unwrapper);
+            System.out.println("Please, wait for result");
+            result.get();
             messages = null;
             System.out.println("[INFO] - converting income mail messages completed !");
         } catch (Exception exception) {

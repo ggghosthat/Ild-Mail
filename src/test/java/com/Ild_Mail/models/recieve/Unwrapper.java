@@ -1,7 +1,6 @@
 package com.Ild_Mail.models.recieve;
 
 import com.Ild_Mail.models.letter_notes_structures.LetterPOJO;
-import com.Ild_Mail.models.logging.Logger;
 
 import javax.activation.DataHandler;
 import javax.mail.BodyPart;
@@ -11,6 +10,8 @@ import javax.mail.Multipart;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 public class Unwrapper implements Runnable {
     private static String alloc_path = "./session/";
@@ -56,6 +57,8 @@ public class Unwrapper implements Runnable {
             exception.printStackTrace();
         }
     }
+
+
 
     //This methods're parsing incomes
     private void MultipartParse(Multipart multipartMessage, LetterPOJO pojo) throws  Exception{
@@ -111,6 +114,8 @@ public class Unwrapper implements Runnable {
             }
         }
     }
+
+
 
     private void ProcessEmbeddedImage(BodyPart bodyPart, LetterPOJO pojo) throws MessagingException, IOException {
         DataHandler dataHandler = bodyPart.getDataHandler();
@@ -173,5 +178,7 @@ public class Unwrapper implements Runnable {
             return result;
         }
     }
+
+
 }
 
