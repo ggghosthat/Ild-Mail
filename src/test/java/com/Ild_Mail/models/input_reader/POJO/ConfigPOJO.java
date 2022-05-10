@@ -15,6 +15,7 @@ public class ConfigPOJO {
     //proxy config
     private MailProxy mailProxy;
 
+
     public String getSMTP_HOST() {
         return SMTP_HOST;
     }

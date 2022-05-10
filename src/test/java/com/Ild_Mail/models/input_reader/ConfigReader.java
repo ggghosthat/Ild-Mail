@@ -30,8 +30,6 @@ public class ConfigReader {
     private static Sender smtp_sender;
     private static RecieverIMAP imap_reciever;
 
-    //Letter pad for <NoteMode>
-    private LetterPad pad;
 
     //path to sending letter
     private String path;
@@ -114,17 +112,6 @@ public class ConfigReader {
 
 
 
-    public void TakeLetter(LetterWriteMode letterMode){
-        switch(letterMode){
-            case LoadMode:
-                pad = new LetterPad(path);
-                break;
-            case NoteMode:
-                pad = new LetterPad();
-                break;
-            default:
-                break;
-        }
-    }
+
 
 }
