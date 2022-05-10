@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Core {
+public class CoreMain {
     static Sender sender = null;
     static String mailHost = null;
     static String from = null;

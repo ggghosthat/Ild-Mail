@@ -7,7 +7,7 @@ import java.io.IOException;
 
 class ConfigReaderTest {
 
-    private ConfigReader configReader = new ConfigReader(System.getProperty("user.dir") + "\\src\\test\\java\\com\\Ild_Mail\\models\\input_reader\\test.json");
+    private ConfigReader configReader = new ConfigReader(System.getProperty("user.dir") + "\\src\\test\\java\\com\\Ild_Mail\\default\\config.json");
 
     @org.junit.jupiter.api.Test
     void parseNode() {

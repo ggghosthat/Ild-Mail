@@ -30,6 +30,15 @@ public class Unwrapper implements Runnable {
     }
 
 
+    @Override
+    public void run() {
+        try {
+            Open();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
     public void Open() throws Exception {
         for (Message mes : messages){
             LetterPOJO pojo = new LetterPOJO();
@@ -48,16 +57,6 @@ public class Unwrapper implements Runnable {
             }
         }
     }
-
-    @Override
-    public void run() {
-        try {
-            Open();
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-    }
-
 
 
     //This methods're parsing incomes
@@ -115,8 +114,6 @@ public class Unwrapper implements Runnable {
         }
     }
 
-
-
     private void ProcessEmbeddedImage(BodyPart bodyPart, LetterPOJO pojo) throws MessagingException, IOException {
         DataHandler dataHandler = bodyPart.getDataHandler();
         String name = dataHandler.getName();
@@ -149,7 +146,7 @@ public class Unwrapper implements Runnable {
             is.close();
     }
 
-
+    //Check allocation path of fetched messages
     private void CheckSessionAllocPath(){
         try {
             File alloc_file = new File(alloc_path);
@@ -164,6 +161,7 @@ public class Unwrapper implements Runnable {
         }
     }
 
+    //Check allocation path of single message
     private String CheckMessageAllocPath(String messageId){
         String result = alloc_path + messageId + "/";
         try {
