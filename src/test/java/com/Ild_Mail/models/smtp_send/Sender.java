@@ -98,6 +98,7 @@ public class Sender {
     private void GenerateSession(){
         Properties properties = System.getProperties();
         properties.put("mail.smtp.ssl.enable", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
         properties.put("mail.smtp.host", host);
         properties.put("mail.smtp.user", fromAddress);
         properties.put("mail.smtp.password", password);

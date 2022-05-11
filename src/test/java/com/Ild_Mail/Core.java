@@ -17,6 +17,7 @@ public class Core implements Runnable {
 
     public static ConfigReader configReader;
 
+
     public static void main(String[] args) throws AddressException {
         new CommandLine(new Core()).execute(args);
     }
@@ -33,5 +34,9 @@ public class Core implements Runnable {
 //            e.printStackTrace();
 //        }
 //        System.out.println("Hello from Main");
+    }
+
+    private static void RequirePassword(){
+
     }
 }

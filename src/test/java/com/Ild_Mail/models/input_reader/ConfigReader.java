@@ -70,17 +70,17 @@ public class ConfigReader {
 
 
     //Sender(SMTP) initialization
-    public Sender EnableSender() throws AddressException {
+    public Sender EnableSender(String password, String target) throws AddressException {
         if (configPOJO.getMailProxy() == null) {
             smtp_sender = new Sender(configPOJO.getSMTP_SOURCE(),
-                    configPOJO.getSMTP_PASSWORD(),
-                    configPOJO.getSMTP_TARGET(),
+                    password,
+                    target,
                     configPOJO.getSMTP_HOST());
         }
         else{
             smtp_sender = new Sender(configPOJO.getSMTP_SOURCE(),
-                    configPOJO.getSMTP_PASSWORD(),
-                    configPOJO.getSMTP_TARGET(),
+                    password,
+                    target,
                     configPOJO.getSMTP_HOST(),
                     configPOJO.getMailProxy().get_host(),
                     configPOJO.getMailProxy().get_port(),
@@ -91,16 +91,16 @@ public class ConfigReader {
     }
 
     //Reciever(IMAP) initialization
-    public RecieverIMAP EnableReciever() throws AddressException {
+    public RecieverIMAP EnableReciever(String password) throws AddressException {
         if (configPOJO.getMailProxy() == null) {
             imap_reciever= new RecieverIMAP(configPOJO.getIMAP_HOST(),
                                             configPOJO.getIMAP_ADDRESS(),
-                                            configPOJO.getIMAP_PASSWORD());
+                                            password);
         }
         else{
             imap_reciever= new RecieverIMAP(configPOJO.getIMAP_HOST(),
                                             configPOJO.getIMAP_ADDRESS(),
-                                            configPOJO.getIMAP_PASSWORD(),
+                                            password,
                                             configPOJO.getMailProxy().get_host(),
                                             configPOJO.getMailProxy().get_port(),
                                             configPOJO.getMailProxy().get_user(),

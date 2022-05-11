@@ -4,14 +4,16 @@ import com.Ild_Mail.Core;
 import com.Ild_Mail.models.input_reader.ConfigReader;
 import com.Ild_Mail.models.input_reader.POJO.ConfigPOJO;
 import com.Ild_Mail.models.smtp_send.Sender;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
+import java.io.Console;
+
 import java.io.IOException;
+import java.util.Scanner;
 import java.util.concurrent.Callable;
 
 
@@ -23,6 +25,8 @@ public class SendSMTPCommand implements Callable {
     //Represent config file
     private ConfigPOJO configPOJO;
 
+
+
     @Parameters(index = "0",
             arity = "1",
             description = "Path to your config.json",
@@ -31,7 +35,8 @@ public class SendSMTPCommand implements Callable {
     private String config_path;
 
     @Option(names = {"-t", "--target"},
-             description = "specify destination address")
+            description = "specify destination address",
+            required = true)
     private String send_target;
 
     @Option(names = {"-s", "--subject"},
@@ -43,13 +48,15 @@ public class SendSMTPCommand implements Callable {
     private String send_text = "";
 
 
+
     @Override
     public Object call() {
         try {
-            Core.configReader = new ConfigReader(config_path);
-            Core.configReader.parseNode(ConfigPOJO.class);
-            configPOJO = Core.configReader.getConfigPOJO();
-            System.out.println(configPOJO.getSMTP_HOST());
+//            Core.configReader = new ConfigReader(config_path);
+//            Core.configReader.parseNode(ConfigPOJO.class);
+//            configPOJO = Core.configReader.getConfigPOJO();
+            String password = new Scanner(System.in).nextLine();
+            SendMail(config_path,password, send_text, send_subject);
             return 0;
         }
         catch (Exception ex) {
@@ -58,22 +65,24 @@ public class SendSMTPCommand implements Callable {
         }
     }
 
-    private void SendMail(String config_path, String path2letter, String subject) {
-//        try {
-//            ConfigReader configReader = new ConfigReader(config_path);
-//            configReader.parseNode(ConfigPOJO.class);
-//            Sender sender = configReader.EnableSender();
-//            sender.PrepareTextMessage(subject, path2letter);
-//            sender.SendMessage();
-//        }
-//        catch (AddressException e) {
-//            e.printStackTrace();
-//        }
-//        catch (IOException e){
-//            e.printStackTrace();
-//        } catch (MessagingException messagingException) {
-//            messagingException.printStackTrace();
-//        }
+
+
+    private void SendMail(String config_path, String password, String path2letter, String subject) {
+        try {
+            ConfigReader configReader = new ConfigReader(config_path);
+            configReader.parseNode(ConfigPOJO.class);
+            Sender sender = configReader.EnableSender(password, send_target);
+            sender.PrepareTextMessage(subject, path2letter);
+            sender.SendMessage();
+        }
+        catch (AddressException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        } catch (MessagingException messagingException) {
+            messagingException.printStackTrace();
+        }
 
     }
 }
