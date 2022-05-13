@@ -1,12 +1,12 @@
 package com.Ild_Mail.models.smtp_send;
 
-import com.Ild_Mail.models.letter_notes_structures.Letter;
-
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 public class Sender {
@@ -53,31 +53,18 @@ public class Sender {
     }
 
 
-    //These methods are preparing message to send
-    //Send simple text message
-    public void PrepareTextMessage(String subject, String body) throws MessagingException {
-        message = new MimeMessage(session);
-        message.setFrom(fromAddress);
-        message.setRecipients(Message.RecipientType.TO, new InternetAddress[]{toAddress});
-
-        message.setSubject(subject);
-        message.setText(body);
-    }
-
     //Send text message with single file
-    public void PrepareFile(String subject, String text, File file) throws MessagingException, IOException {
+    public void MessageUp(String subject, String text, String attachPath, boolean isTextFile) throws MessagingException, IOException {
         message = new MimeMessage(session);
         MimeBodyPart mesPart = new MimeBodyPart();
-        MimeBodyPart bodyPartHTML = new MimeBodyPart();
+        MimeBodyPart bodyPartFile = AttachProcess(attachPath);
 
-        mesPart.setText(text);
+        String raw = ReadProcess(text, isTextFile);
+        mesPart.setText(raw);
 
-        if(file.exists()){
-            bodyPartHTML.attachFile(file);
-            System.out.println("File succesed");
-        }
         multipartMsg.addBodyPart(mesPart);
-        multipartMsg.addBodyPart(bodyPartHTML);
+        if (bodyPartFile != null)
+            multipartMsg.addBodyPart(bodyPartFile);
 
         message.setSubject(subject);
         message.setContent(multipartMsg);
@@ -85,13 +72,37 @@ public class Sender {
         message.setRecipients(Message.RecipientType.TO, new InternetAddress[]{toAddress});
     }
 
-    //Send message predefined by special struct (Letter.java)
-    public void WrapEnvelope(Letter letter) throws MessagingException {
-        message = letter.getMessage();
-        message.setFrom(fromAddress);
-        message.setRecipients(Message.RecipientType.TO, new InternetAddress[]{toAddress});
-        System.out.println("[INFO] - Message ready to sending .");
+    private String ReadProcess(String body, boolean isFile){
+        String result = null;
+        if (isFile){
+            try{
+                for (String strip : Files.readAllLines(Paths.get(body))){
+                    result += strip + '\n';
+                }
+                return result;
+            }
+            catch (Exception ex){
+                ex.printStackTrace();
+            }
+        }
+        result = body;
+        return result;
     }
+
+    //File 2 Message attachment process
+    private MimeBodyPart AttachProcess(String attachPath) throws IOException, MessagingException {
+        MimeBodyPart bodyPart = new MimeBodyPart();
+        File attachItem = new File(attachPath);
+
+        if(attachItem.exists()){
+            bodyPart.attachFile(attachItem);
+            System.out.println("File succesed");
+            return bodyPart;
+        }
+
+        return  null;
+    }
+
 
 
     //Generate email-server session

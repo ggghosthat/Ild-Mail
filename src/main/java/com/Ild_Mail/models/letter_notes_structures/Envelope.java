@@ -3,7 +3,6 @@ package com.Ild_Mail.models.letter_notes_structures;
 import com.Ild_Mail.Interfaces.ILetter;
 
 import javax.mail.Address;
-import javax.mail.Multipart;
 import java.util.Date;
 
 public class Envelope {

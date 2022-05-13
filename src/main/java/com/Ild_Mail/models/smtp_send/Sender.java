@@ -1,12 +1,12 @@
 package com.Ild_Mail.models.smtp_send;
 
-import com.Ild_Mail.models.letter_notes_structures.Letter;
-
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 public class Sender {
@@ -37,49 +37,34 @@ public class Sender {
         this.host = host;
     }
 
-    public Sender(String from, String password, String to, String host, String proxy_host, int proxy_port, String proxy_user, String proxy_password) throws AddressException {
+    public Sender(String from, String password, String to, String host,
+                  String proxy_host, String proxy_port, String proxy_user, String proxy_password) throws AddressException {
         fromAddress = new InternetAddress(from);
         toAddress = new InternetAddress(to);
         this.password = password;
         this.host = host;
 
         this.proxy_host = proxy_host;
-        this.proxy_port = String.valueOf(proxy_port);
+        this.proxy_port = proxy_port;
         this.proxy_user = proxy_user;
         this.proxy_password = proxy_password;
 
         this.isUsingProxy = true;
     }
 
-    public Sender(String smtp_source, String smtp_password, String smtp_target, String smtp_host, String host, String port, String user, String password) {
-    }
 
-
-    //These methods are preparing message to send
-    //Send simple text message
-    public void PrepareTextMessage(String subject, String body) throws MessagingException {
-        message = new MimeMessage(session);
-        message.setFrom(fromAddress);
-        message.setRecipients(Message.RecipientType.TO, new InternetAddress[]{toAddress});
-
-        message.setSubject(subject);
-        message.setText(body);
-    }
-
-    //Send text message with file
-    public void PrepareFile(String subject, String text, File file) throws MessagingException, IOException {
+    //Send text message with single file
+    public void MessageUp(String subject, String text, String attachPath, boolean isTextFile) throws MessagingException, IOException {
         message = new MimeMessage(session);
         MimeBodyPart mesPart = new MimeBodyPart();
-        MimeBodyPart bodyPartHTML = new MimeBodyPart();
+        MimeBodyPart bodyPartFile = AttachProcess(attachPath);
 
-        mesPart.setText(text);
+        String raw = ReadProcess(text, isTextFile);
+        mesPart.setText(raw);
 
-        if(file.exists()){
-            bodyPartHTML.attachFile(file);
-            System.out.println("File succesed");
-        }
         multipartMsg.addBodyPart(mesPart);
-        multipartMsg.addBodyPart(bodyPartHTML);
+        if (bodyPartFile != null)
+            multipartMsg.addBodyPart(bodyPartFile);
 
         message.setSubject(subject);
         message.setContent(multipartMsg);
@@ -87,19 +72,44 @@ public class Sender {
         message.setRecipients(Message.RecipientType.TO, new InternetAddress[]{toAddress});
     }
 
-    //Send message predefined by special struct (Letter.java)
-    public void WrapEnvelope(Letter letter) throws MessagingException {
-        message = letter.getMessage();
-        message.setFrom(fromAddress);
-        message.setRecipients(Message.RecipientType.TO, new InternetAddress[]{toAddress});
-        System.out.println("[INFO] - Message ready to sending .");
+    private String ReadProcess(String body, boolean isFile){
+        String result = null;
+        if (isFile){
+            try{
+                for (String strip : Files.readAllLines(Paths.get(body))){
+                    result += strip + '\n';
+                }
+                return result;
+            }
+            catch (Exception ex){
+                ex.printStackTrace();
+            }
+        }
+        result = body;
+        return result;
     }
+
+    //File 2 Message attachment process
+    private MimeBodyPart AttachProcess(String attachPath) throws IOException, MessagingException {
+        MimeBodyPart bodyPart = new MimeBodyPart();
+        File attachItem = new File(attachPath);
+
+        if(attachItem.exists()){
+            bodyPart.attachFile(attachItem);
+            System.out.println("File succesed");
+            return bodyPart;
+        }
+
+        return  null;
+    }
+
 
 
     //Generate email-server session
     private void GenerateSession(){
         Properties properties = System.getProperties();
         properties.put("mail.smtp.ssl.enable", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
         properties.put("mail.smtp.host", host);
         properties.put("mail.smtp.user", fromAddress);
         properties.put("mail.smtp.password", password);
@@ -132,11 +142,9 @@ public class Sender {
     public void SendMessage(){
         try {
             GenerateSession();
-
             System.out.println("Sending message ...");
             TransferreMessage();
             System.out.println("Message was sent successfuly");
-
         }
         catch(Exception ex) {
             ex.printStackTrace();

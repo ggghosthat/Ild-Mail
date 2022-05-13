@@ -1,6 +1,6 @@
-package com.Ild_Mail.models.dump_structures;
+package com.Ild_Mail.models.recieve;
 
-import com.Ild_Mail.models.logging.Logger;
+import com.Ild_Mail.models.letter_notes_structures.LetterPOJO;
 
 import javax.activation.DataHandler;
 import javax.mail.BodyPart;
@@ -11,39 +11,54 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Unwrapper {
-    List<Message> messages;
+public class Unwrapper implements Runnable {
+    private static String alloc_path = "./session/";
 
-    String savePathway;
+    private List<Message> messages;
 
-    List<Multipart> multipartLetters = new ArrayList<Multipart>();
-    List<String> textLetters = new ArrayList<String>();
+    private List<LetterPOJO> letterPOJOs = new ArrayList<LetterPOJO>();
+    private List<Multipart> multipartLetters = new ArrayList<Multipart>();
+    private List<String> textLetters = new ArrayList<String>();
 
-    private Logger _logger = new Logger();
 
     public Unwrapper (List<Message> messages)
     {
         this.messages = messages;
+        CheckSessionAllocPath();
+    }
+
+
+    @Override
+    public void run() {
+        try {
+            Open();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
     }
 
     public void Open() throws Exception {
         for (Message mes : messages){
+            LetterPOJO pojo = new LetterPOJO();
+
+            String message_alloc = CheckMessageAllocPath(pojo.get_id());
+            pojo.set_alloc_path(message_alloc);
+            pojo.set_subject(mes.getSubject());
             Object content = mes.getContent();
+
             if(content instanceof String){
-                _logger.PutLog("[MAIL] Plain Text Letter > " + mes.getSubject() + "\n" + content.toString());
-                System.out.println("[MAIL] Plain Text Letter > " + content);
-                textLetters.add((String) content);
+                pojo.set_content((String) content);
             }
             else if(content instanceof  Multipart){
-                _logger.PutLog("[MAIL] Multipart Letter > " + mes.getSubject());
                 Multipart multipart = (Multipart) content;
-                MultipartParse(multipart);
-
+                MultipartParse(multipart, pojo);
             }
         }
     }
 
-    private void MultipartParse(Multipart multipartMessage) throws  Exception{
+
+    //This methods're parsing incomes
+    private void MultipartParse(Multipart multipartMessage, LetterPOJO pojo) throws  Exception{
         int count = multipartMessage.getCount();
 
         for (int i = 0; i < count; i++) {
@@ -51,7 +66,6 @@ public class Unwrapper {
             String[] cids = bodyPart.getHeader("Content-Id");
 
             String count_ids_banner = "Count of content ids : " + (cids == null ? "No content id" : cids.length);
-            _logger.PutLog(count_ids_banner);
             System.out.println(count_ids_banner);
 
             String cid="", content = "";
@@ -65,58 +79,57 @@ public class Unwrapper {
                 }
             }
 
-            _logger.PutLog(content + "---" + cid + "\n" + bodyPart.getContentType() );
             System.out.println(content + "---" + cid + "\n" + bodyPart.getContentType());
 
             if(bodyPart.isMimeType("text/plain")){
                 String plain_text_banner = "[MAIL] Plain text letter : \n\t" + bodyPart.getContent();
-                _logger.PutLog(plain_text_banner);
+                pojo.set_tag(LetterPOJO.LetterPOJOTag.PLAIN_TEXT);
+                pojo.set_content(bodyPart.getContent().toString());
                 System.out.println(plain_text_banner);
             }
             else if(bodyPart.isMimeType("text/html")){
                 String html_text_banner = "[MAIL] HTML letter \n\t:" + bodyPart.getContent();
-                _logger.PutLog(html_text_banner);
+                pojo.set_tag(LetterPOJO.LetterPOJOTag.HTML_TEXT);
+                pojo.set_content(bodyPart.getContent().toString());
                 System.out.println(html_text_banner);
             }
             else if (bodyPart.isMimeType("multipart/*")) {
                 Multipart part = (Multipart)bodyPart.getContent();
-                MultipartParse(part);
+                MultipartParse(part, pojo);
             }
             else if (bodyPart.isMimeType("application/octet-stream")) {
                 String disposition = bodyPart.getDisposition();
-
                 String binraw_banner = "[MAIL] binary raw:" + disposition;
-                _logger.PutLog(binraw_banner);
                 System.out.println(binraw_banner);
 
                 if (disposition.equalsIgnoreCase(BodyPart.ATTACHMENT)) {
-                    ProcessAttachment(bodyPart);
+                    ProcessAttachment(bodyPart, pojo);
                 }
-            } else if (bodyPart.isMimeType("image/*") && !("".equals(cid))) {
-                ProcessEmbeddedImage(bodyPart);
+            }
+            else if (bodyPart.isMimeType("image/*") && !("".equals(cid))) {
+                ProcessEmbeddedImage(bodyPart, pojo);
             }
         }
     }
 
-    private void ProcessEmbeddedImage(BodyPart bodyPart) throws MessagingException, IOException {
+    private void ProcessEmbeddedImage(BodyPart bodyPart, LetterPOJO pojo) throws MessagingException, IOException {
         DataHandler dataHandler = bodyPart.getDataHandler();
         String name = dataHandler.getName();
 
-        String image_banner = "[MAIL] embedded picture name:" + name;
-        _logger.PutLog(image_banner);
-        System.out.println ("[MAIL] embedded picture name:" + name);
-
         InputStream is = dataHandler.getInputStream();
-        File file = new File( "./session/" + name);
+        File file = new File(pojo.getAlloc_path() + name);
         copy(is, new FileOutputStream(file));
+        pojo.set_tag(LetterPOJO.LetterPOJOTag.IMAGES);
+        pojo.set_files(file);
+
     }
 
-    private void ProcessAttachment(BodyPart bodyPart) throws MessagingException, IOException {
-        String fileName = bodyPart.getFileName();
-        System.out.println("[INFO] saving attachment" + fileName);
+    private void ProcessAttachment(BodyPart bodyPart, LetterPOJO pojo) throws MessagingException, IOException {
         InputStream is = bodyPart.getInputStream();
-        File file = new File("./session/"+fileName);
+        File file = new File(pojo.getAlloc_path() + bodyPart.getFileName());
         copy(is, new FileOutputStream(file));
+        pojo.set_tag(LetterPOJO.LetterPOJOTag.FILES);
+        pojo.set_files(file);
     }
 
     private void copy(InputStream is, OutputStream os) throws IOException {
@@ -130,5 +143,38 @@ public class Unwrapper {
         if (is != null)
             is.close();
     }
+
+    //Check allocation path of fetched messages
+    private void CheckSessionAllocPath(){
+        try {
+            File alloc_file = new File(alloc_path);
+            if (!alloc_file.exists())
+                alloc_file.mkdir();
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+        finally {
+            return;
+        }
+    }
+
+    //Check allocation path of single message
+    private String CheckMessageAllocPath(String messageId){
+        String result = alloc_path + messageId + "/";
+        try {
+            File alloc_file = new File(result);
+            if (!alloc_file.exists())
+                alloc_file.mkdir();
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+        finally {
+            return result;
+        }
+    }
+
+
 }
 

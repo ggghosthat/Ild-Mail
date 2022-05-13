@@ -5,6 +5,10 @@
   "IMAP_HOST": "imap_host",
   "IMAP_ADDRESS": "imap_address",
 
-  "mailProxy": null
+  "mailProxy": {
+    "_host": "proxHost",
+    "_port": "proxPort",
+    "_user": "proxUser",
+    "_password": "proxPassword"
+  }
 }
-

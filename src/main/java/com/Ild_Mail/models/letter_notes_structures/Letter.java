@@ -2,9 +2,7 @@ package com.Ild_Mail.models.letter_notes_structures;
 
 import com.Ild_Mail.Interfaces.ILetter;
 
-import javax.mail.BodyPart;
 import javax.mail.Message;
-import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.MimeBodyPart;
 import java.io.File;
@@ -24,6 +22,8 @@ public class Letter implements ILetter {
 
 
     private Note letterWriter = null;
+
+
 
 
     public String getId(){
@@ -58,24 +58,24 @@ public class Letter implements ILetter {
             _files.addAll(files);
     }
 
-    public Message getMessage(){
-        return this._message;
-    }
 
-
+    @Override
     public void AddFile(File file) {
         this._files.add(file);
     }
 
+    @Override
     public void ClearFileStructer() {
         this._files.clear();
         this._files = null;
     }
 
+    @Override
     public void RemoveFile(int index) {
         this._files.remove(index);
     }
 
+    @Override
     public void InsertFile(int index, File file) throws Exception {
        if (_files.size() > 0)
            _files.set(index, file);
@@ -83,6 +83,7 @@ public class Letter implements ILetter {
            _files.add(file);
     }
 
+    @Override
     public void ModifyFile(int index, File file) {
         this._files.set(index, file);
     }
@@ -92,6 +93,11 @@ public class Letter implements ILetter {
         return  letterWriter.WriteNote();
     }
 
+
+
+    public Message getMessage(){
+        return this._message;
+    }
 
     public void PrepareMimeBody() throws Exception {
         MimeBodyPart _mimeBody = new MimeBodyPart();
