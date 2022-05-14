@@ -1,16 +1,13 @@
 package com.Ild_Mail.models.recieve;
 
-import com.Ild_Mail.models.letter_notes_structures.LetterIMAP;
-
 import javax.mail.*;
-import javax.mail.internet.AddressException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 
-public class RecieverIMAP {
+public class ReceiverIMAP {
     private static String host = null;
     private static String address = null;
     private static String password = null;
@@ -22,13 +19,14 @@ public class RecieverIMAP {
     private static String proxy_user = null;
     private static String proxy_password = null;
 
+    private static String allocation = null;
+
     private static Session session = null;
     private static Store store;
     private static Unwrapper unwrapper;
 
 
     private static List<Message> messages = new ArrayList<Message>();
-    private static List<LetterIMAP> convertedLetters;
 
     public List<Message> getMessages (){
         return this.messages;
@@ -37,17 +35,19 @@ public class RecieverIMAP {
 
 
 
-    public RecieverIMAP(String host, String address, String password) throws AddressException {
+    public ReceiverIMAP(String host, String address, String password, String allocation) {
         this.host = host;
         this.address = address;
         this.password = password;
+        this.allocation = allocation;
     }
 
-    public RecieverIMAP(String host, String address, String password,
-                        String proxy_host, String proxy_port, String proxy_user, String proxy_password) throws AddressException {
+    public ReceiverIMAP(String host, String address, String password, String allocation,
+                        String proxy_host, String proxy_port, String proxy_user, String proxy_password) {
         this.host = host;
         this.address = address;
         this.password = password;
+        this.allocation = allocation;
 
         this.proxy_host = proxy_host;
         this.proxy_port = proxy_port;
@@ -98,6 +98,7 @@ public class RecieverIMAP {
             messages.add(folder.getMessage(i));
         }
 
+        unwrapper = new Unwrapper(messages, allocation);
         ConvertIncomesAsync();
 
         System.out.println("All letters were recieved !");

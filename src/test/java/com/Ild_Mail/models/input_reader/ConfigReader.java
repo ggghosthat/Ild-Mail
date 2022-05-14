@@ -8,16 +8,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.Ild_Mail.models.smtp_send.Sender;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
-import com.Ild_Mail.models.recieve.RecieverIMAP;
+import com.Ild_Mail.models.recieve.ReceiverIMAP;
 
 import javax.mail.internet.AddressException;
 import java.io.File;
 import java.io.IOException;
 
-enum LetterWriteMode{
-    NoteMode,
-    LoadMode
-}
 
 public class ConfigReader {
     //Jackson JSON handler
@@ -28,7 +24,7 @@ public class ConfigReader {
     private static ConfigPOJO configPOJO;
 
     private static Sender smtp_sender;
-    private static RecieverIMAP imap_reciever;
+    private static ReceiverIMAP imap_reciever;
 
 
     //path to sending letter
@@ -91,16 +87,18 @@ public class ConfigReader {
     }
 
     //Reciever(IMAP) initialization
-    public RecieverIMAP EnableReciever(String password) throws AddressException {
+    public ReceiverIMAP EnableReciever(String password) throws AddressException {
         if (configPOJO.getMailProxy() == null) {
-            imap_reciever= new RecieverIMAP(configPOJO.getIMAP_HOST(),
-                                            configPOJO.getIMAP_ADDRESS(),
-                                            password);
-        }
-        else{
-            imap_reciever= new RecieverIMAP(configPOJO.getIMAP_HOST(),
+            imap_reciever= new ReceiverIMAP(configPOJO.getIMAP_HOST(),
                                             configPOJO.getIMAP_ADDRESS(),
                                             password,
+                                            configPOJO.getIMAP_ALLOC());
+        }
+        else{
+            imap_reciever= new ReceiverIMAP(configPOJO.getIMAP_HOST(),
+                                            configPOJO.getIMAP_ADDRESS(),
+                                            password,
+                                            configPOJO.getIMAP_ALLOC(),
                                             configPOJO.getMailProxy().get_host(),
                                             configPOJO.getMailProxy().get_port(),
                                             configPOJO.getMailProxy().get_user(),

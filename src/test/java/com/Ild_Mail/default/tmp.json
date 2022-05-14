@@ -4,6 +4,7 @@
 
   "IMAP_HOST": "imap_host",
   "IMAP_ADDRESS": "imap_address",
+  "IMAP_ALLOC": "path 2 your alloc",
 
   "mailProxy": {
     "_host": "proxHost",

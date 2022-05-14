@@ -1,11 +1,12 @@
 package com.Ild_Mail.models.input_reader.commands;
 
-import com.Ild_Mail.Core;
 import com.Ild_Mail.models.input_reader.ConfigReader;
 import com.Ild_Mail.models.input_reader.POJO.ConfigPOJO;
+import com.Ild_Mail.models.recieve.ReceiverIMAP;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Command;
 
+import java.util.Scanner;
 import java.util.concurrent.Callable;
 
 @Command(name="imap",
@@ -23,17 +24,28 @@ public class ReceiveIMAPCommand implements Callable {
     )
     private String config_path;
 
+
     @Override
     public Object call() {
         try{
-            Core.configReader = new ConfigReader(config_path);
-            Core.configReader.parseNode(ConfigPOJO.class);
-            configPOJO = Core.configReader.getConfigPOJO();
-            System.out.println(configPOJO.getSMTP_HOST());
+            String password = new Scanner(System.in).nextLine();
+            ReceiveMail(password);
             return 0;
         }
         catch(Exception ex){
             return -1;
+        }
+    }
+
+    private void ReceiveMail(String password){
+        try {
+            ConfigReader configReader = new ConfigReader(config_path);
+            configReader.parseNode(ConfigPOJO.class);
+            ReceiverIMAP reciever = configReader.EnableReciever(password);
+            reciever.LookIntoBox();
+        }
+        catch(Exception ex){
+            ex.printStackTrace();
         }
     }
 }

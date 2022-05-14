@@ -8,6 +8,9 @@ public class ConfigPOJO {
     //IMAP auth config
     private String IMAP_HOST;
     private String IMAP_ADDRESS;
+    private String IMAP_ALLOC;
+
+
 
     //proxy config
     private MailProxy mailProxy;
@@ -43,6 +46,14 @@ public class ConfigPOJO {
 
     public void setIMAP_ADDRESS(String IMAP_ADDRESS) {
         this.IMAP_ADDRESS = IMAP_ADDRESS;
+    }
+
+    public String getIMAP_ALLOC() {
+        return IMAP_ALLOC;
+    }
+
+    public void setIMAP_ALLOC(String IMAP_ALLOC) {
+        this.IMAP_ALLOC = IMAP_ALLOC;
     }
 
     public MailProxy getMailProxy() {

@@ -21,9 +21,12 @@ public class Unwrapper implements Runnable {
     private List<String> textLetters = new ArrayList<String>();
 
 
-    public Unwrapper (List<Message> messages)
+    public Unwrapper (List<Message> messages, String alloc_box)
     {
         this.messages = messages;
+        if (alloc_box != null)
+            alloc_path = alloc_box;
+
         CheckSessionAllocPath();
     }
 
