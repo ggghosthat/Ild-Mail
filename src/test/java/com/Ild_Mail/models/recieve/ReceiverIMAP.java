@@ -1,11 +1,9 @@
 package com.Ild_Mail.models.recieve;
 
 import javax.mail.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.CompletableFuture;
 
 public class ReceiverIMAP {
     private static String host = null;
@@ -23,16 +21,10 @@ public class ReceiverIMAP {
 
     private static Session session = null;
     private static Store store;
-    private static Unwrapper unwrapper;
+    private static Unwraper unwraper = null;
 
 
     private static List<Message> messages = new ArrayList<Message>();
-
-    public List<Message> getMessages (){
-        return this.messages;
-    }
-
-
 
 
     public ReceiverIMAP(String host, String address, String password, String allocation) {
@@ -78,7 +70,7 @@ public class ReceiverIMAP {
         }
 
         session = session.getDefaultInstance(properties,null);
-        session.setDebug(true);
+        session.setDebug(false);
     }
 
     //initializing session store for communicating with mail messages
@@ -88,39 +80,22 @@ public class ReceiverIMAP {
     }
 
     //Fetching messages from mail box & converting
-    private void LookFolders() throws MessagingException, IOException {
+    private void LookFolders() throws Exception {
         System.out.println("Please, wait ...");
         Folder folder = store.getFolder("INBOX");
         int count = folder.getMessageCount();
 
         folder.open(Folder.READ_WRITE);
-        for (int i =1; i < count; i++){
-            messages.add(folder.getMessage(i));
-        }
 
-        unwrapper = new Unwrapper(messages, allocation);
-        ConvertIncomesAsync();
+        System.out.println("Found total count of messages : " + folder.getMessageCount());
+
+        for (int i =1; i < count; i++){
+            unwraper = new Unwraper(allocation);
+            unwraper.Open(folder.getMessage(i));
+        }
 
         System.out.println("All letters were recieved !");
     }
-
-    //Converting incomes to LetterIMAP struct
-    private void ConvertIncomesAsync(){
-        System.out.println("[INFO] - Unwrapping income mail messages ...");
-
-        try {
-            System.out.println("[INFO] - converting income mail messages ...");
-            CompletableFuture<Void> result = CompletableFuture.runAsync(unwrapper);
-            System.out.println("Please, wait for result");
-            result.get();
-            messages = null;
-            System.out.println("[INFO] - converting income mail messages completed !");
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-    }
-
-
 
     public void LookIntoBox(){
         try{
@@ -132,7 +107,5 @@ public class ReceiverIMAP {
             ex.printStackTrace();
         }
     }
-
-    //TODO:Need method for cleaning processes
 
 }
