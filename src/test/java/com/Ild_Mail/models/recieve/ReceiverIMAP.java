@@ -20,7 +20,7 @@ public class ReceiverIMAP {
     private static String allocation = null;
 
     private static Session session = null;
-    private static Store store;
+    private static Store store = null;
     private static Unwraper unwraper = null;
 
 
