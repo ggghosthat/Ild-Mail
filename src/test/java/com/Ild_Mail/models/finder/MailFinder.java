@@ -36,7 +36,7 @@ public class MailFinder implements Supplier<Message[]> {
     private static String template;
 
 
-    public MailFinder(String host, String address, String password, String allocation) {
+    public MailFinder(String host, String address, String password) {
         this.host = host;
         this.address = address;
         this.password = password;
@@ -143,11 +143,11 @@ public class MailFinder implements Supplier<Message[]> {
                     break;
                 case ADDRESS:
                     for (Address address : message.getAllRecipients())
-                        if(address.toString().equals(template))
+                        if(address.toString().toLowerCase().contains(template))
                             foundMessages.add(message);
                     break;
                 case SUBJECT:
-                    if (message.getSubject().equals(template))
+                    if (message.getSubject().toLowerCase().contains(template))
                         foundMessages.add(message);
                     break;
                 default:

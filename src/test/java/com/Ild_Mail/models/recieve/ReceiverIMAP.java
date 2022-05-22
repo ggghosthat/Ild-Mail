@@ -4,8 +4,10 @@ import javax.mail.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
-public class ReceiverIMAP {
+public class ReceiverIMAP implements Supplier<Message[]> {
     private static String host = null;
     private static String address = null;
     private static String password = null;
@@ -26,6 +28,9 @@ public class ReceiverIMAP {
 
     private static List<Message> messages = new ArrayList<Message>();
 
+
+    public ReceiverIMAP() {
+    }
 
     public ReceiverIMAP(String host, String address, String password, String allocation) {
         this.host = host;
@@ -51,21 +56,60 @@ public class ReceiverIMAP {
 
 
 
+    //build RecieverIMAP instance
+    public static void build(String host, String address, String password, String allocation){
+        host = host;
+        address = address;
+        password = password;
+        allocation = allocation;
+    }
+
+    //build RecieverIMAP instance
+    public static void build(String host, String address, String password, String allocation,
+                             String proxy_host, String proxy_port, String proxy_user, String proxy_password){
+        host = host;
+        address = address;
+        password = password;
+        allocation = allocation;
+
+        proxy_host = proxy_host;
+        proxy_port = proxy_port;
+        proxy_user = proxy_user;
+        proxy_password = proxy_password;
+
+        isUsingProxy = true;
+    }
+
+
+
+
+    @Override
+    public Message[] get() {
+        try {
+            return ObtainMessages();
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            return null;
+        }
+
+    }
+
 
     //generating mail session for mail server connection
-    private void GenerateSession(){
+    private static void GenerateSession(){
         Properties properties = new Properties();
         properties.setProperty("mail.imap.port","993");
         properties.setProperty("mail.imap.ssl.enable","true");
         properties.setProperty("mail.store.protocol","imaps");
 
         if(isUsingProxy){
-            properties.setProperty("mail.imap.proxy.host",this.proxy_host);
-            properties.setProperty("mail.imap.proxy.port",this.proxy_port);
+            properties.setProperty("mail.imap.proxy.host",proxy_host);
+            properties.setProperty("mail.imap.proxy.port",proxy_port);
 
-            if(this.proxy_user !=  null && this.proxy_password != null && this.proxy_user !=  "" && this.proxy_password != "") {
-                properties.setProperty("mail.imap.proxy.user", this.proxy_user);
-                properties.setProperty("mail.imap.proxy.password", this.proxy_password);
+            if(proxy_user !=  null && proxy_password != null && proxy_user !=  "" && proxy_password != "") {
+                properties.setProperty("mail.imap.proxy.user", proxy_user);
+                properties.setProperty("mail.imap.proxy.password", proxy_password);
             }
         }
 
@@ -74,24 +118,31 @@ public class ReceiverIMAP {
     }
 
     //initializing session store for communicating with mail messages
-    private void InitStore() throws MessagingException {
+    private static void InitStore() throws MessagingException {
         store = session.getStore("imaps");
         store.connect(host, address, password);
     }
 
-    //Fetching messages from mail box & converting
-    private void LookFolders() throws Exception {
-        System.out.println("Please, wait ...");
+    //Obtain IMAP folders
+    //This method using for fetching all messages by IMAP proto
+    private static Message[] ObtainMessages() throws MessagingException {
         Folder folder = store.getFolder("INBOX");
-        int count = folder.getMessageCount();
 
         folder.open(Folder.READ_WRITE);
+        return folder.getMessages();
+    }
 
-        System.out.println("Found total count of messages : " + folder.getMessageCount());
+    //Fetching messages from mail box & converting
+    //Here it fetching messages by IMAP proto asynchronously
+    //Then we iterate them to unwrap each other
+    private void LookFolders() throws Exception {
+        CompletableFuture<Message[]> messagesFetched = CompletableFuture.supplyAsync(this::get);
+        Message[] messages = messagesFetched.get();
+        System.out.println("Found total count of messages : " + messages.length);
 
-        for (int i =1; i < count; i++){
+        for (Message message : messages){
             unwraper = new Unwraper(allocation);
-            unwraper.Open(folder.getMessage(i));
+            unwraper.Open(message);
         }
 
         System.out.println("All letters were recieved !");
@@ -108,4 +159,18 @@ public class ReceiverIMAP {
         }
     }
 
+
+
+    //external API 2 fetch messages
+    public Message[] ExtractFromBox(){
+        try{
+            GenerateSession();
+            InitStore();
+            return  CompletableFuture.supplyAsync(this::get).get();
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            return null;
+        }
+    }
 }
