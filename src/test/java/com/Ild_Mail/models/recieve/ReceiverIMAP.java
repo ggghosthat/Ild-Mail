@@ -23,6 +23,7 @@ public class ReceiverIMAP implements Supplier<Message[]> {
 
     private static Session session = null;
     private static Store store = null;
+    private static Folder folder = null;
     private static Unwraper unwraper = null;
 
 
@@ -57,15 +58,14 @@ public class ReceiverIMAP implements Supplier<Message[]> {
 
 
     //build RecieverIMAP instance
-    public static void build(String host, String address, String password, String allocation){
-        host = host;
-        address = address;
-        password = password;
-        allocation = allocation;
+    public static void build(String _host, String _address, String _password){
+        host = _host;
+        address = _address;
+        password = _password;
     }
 
     //build RecieverIMAP instance
-    public static void build(String host, String address, String password, String allocation,
+    public static void build(String host, String address, String password,
                              String proxy_host, String proxy_port, String proxy_user, String proxy_password){
         host = host;
         address = address;
@@ -126,7 +126,7 @@ public class ReceiverIMAP implements Supplier<Message[]> {
     //Obtain IMAP folders
     //This method using for fetching all messages by IMAP proto
     private static Message[] ObtainMessages() throws MessagingException {
-        Folder folder = store.getFolder("INBOX");
+        folder = store.getFolder("INBOX");
 
         folder.open(Folder.READ_WRITE);
         return folder.getMessages();
@@ -166,6 +166,7 @@ public class ReceiverIMAP implements Supplier<Message[]> {
         try{
             GenerateSession();
             InitStore();
+            System.out.println("Please wait ...");
             return  CompletableFuture.supplyAsync(this::get).get();
         }
         catch (Exception ex){
