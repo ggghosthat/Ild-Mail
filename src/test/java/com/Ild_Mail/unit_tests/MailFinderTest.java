@@ -11,8 +11,9 @@ class MailFinderTest {
 
     @org.junit.jupiter.api.Test
     public void findInterest() throws MessagingException {
-        finder.setSearchType(SearchType.SUBJECT);
-        finder.setTemplate("matrix");
-        finder.search();
+//        finder.setSearchType(SearchType.ADDRESS);
+//        finder.setTemplate("inst");
+//        finder.search();
+
     }
 }

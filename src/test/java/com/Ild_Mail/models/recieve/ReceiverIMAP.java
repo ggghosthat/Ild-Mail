@@ -1,6 +1,7 @@
 package com.Ild_Mail.models.recieve;
 
 import javax.mail.*;
+import javax.mail.search.FlagTerm;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -65,17 +66,16 @@ public class ReceiverIMAP implements Supplier<Message[]> {
     }
 
     //build RecieverIMAP instance
-    public static void build(String host, String address, String password,
-                             String proxy_host, String proxy_port, String proxy_user, String proxy_password){
-        host = host;
-        address = address;
-        password = password;
-        allocation = allocation;
+    public static void build(String _host, String _address, String _password,
+                             String _proxy_host, String _proxy_port, String _proxy_user, String _proxy_password){
+        host = _host;
+        address = _address;
+        password = _password;
 
-        proxy_host = proxy_host;
-        proxy_port = proxy_port;
-        proxy_user = proxy_user;
-        proxy_password = proxy_password;
+        proxy_port = _proxy_port;
+        proxy_host = _proxy_host;
+        proxy_user = _proxy_user;
+        proxy_password = _proxy_password;
 
         isUsingProxy = true;
     }
@@ -132,6 +132,15 @@ public class ReceiverIMAP implements Supplier<Message[]> {
         return folder.getMessages();
     }
 
+    //Obtain IMAP folders
+    //This method using for fetching all messages by IMAP proto
+    private Message[] ObtainUnreadMessages() throws MessagingException {
+        folder = store.getFolder("INBOX");
+
+        folder.open(Folder.READ_WRITE);
+        return folder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
+    }
+
     //Fetching messages from mail box & converting
     //Here it fetching messages by IMAP proto asynchronously
     //Then we iterate them to unwrap each other
@@ -174,4 +183,34 @@ public class ReceiverIMAP implements Supplier<Message[]> {
             return null;
         }
     }
+
+    //external API 2 fetch unread messages
+    public Message[] ExtractUnread(){
+        try{
+            GenerateSession();
+            InitStore();
+            System.out.println("Please wait ...");
+
+            Message[] result = CompletableFuture.supplyAsync(supplierUnread).get();
+            System.out.println("You have" + result.length + "unread messages");
+            return result;
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            return  null;
+        }
+    }
+
+    Supplier<Message[]> supplierUnread = new Supplier<Message[]>() {
+        @Override
+        public Message[] get() {
+            try{
+                return ObtainUnreadMessages();
+            }
+            catch (Exception ex){
+                ex.printStackTrace();
+                return null;
+            }
+        }
+    };
 }
