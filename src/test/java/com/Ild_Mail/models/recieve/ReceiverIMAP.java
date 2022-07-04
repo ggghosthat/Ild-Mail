@@ -1,10 +1,13 @@
 package com.Ild_Mail.models.recieve;
 
+import javafx.concurrent.Task;
+
 import javax.mail.*;
 import javax.mail.search.FlagTerm;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
@@ -125,7 +128,7 @@ public class ReceiverIMAP implements Supplier<Message[]> {
 
     //Obtain IMAP folders
     //This method using for fetching all messages by IMAP proto
-    private static Message[] ObtainMessages() throws MessagingException {
+    private Message[] ObtainMessages() throws MessagingException {
         folder = store.getFolder("INBOX");
 
         folder.open(Folder.READ_WRITE);
@@ -140,6 +143,27 @@ public class ReceiverIMAP implements Supplier<Message[]> {
         folder.open(Folder.READ_WRITE);
         return folder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
     }
+
+    private Message[] ObtainLimitedCount(int startNum, int endNum) throws MessagingException{
+        folder = store.getFolder("INBOX");
+
+
+        folder.open(Folder.READ_WRITE);
+        return folder.getMessages(startNum, endNum);
+    }
+
+    private Message[] ObtainLast(int count) throws MessagingException{
+        folder = store.getFolder("INBOX");
+
+
+        folder.open(Folder.READ_WRITE);
+        int end = folder.getMessageCount();
+        int start = end - count;
+
+        return folder.getMessages(start, end);
+    }
+
+
 
     //Fetching messages from mail box & converting
     //Here it fetching messages by IMAP proto asynchronously
@@ -184,6 +208,7 @@ public class ReceiverIMAP implements Supplier<Message[]> {
         }
     }
 
+
     //external API 2 fetch unread messages
     public Message[] ExtractUnread(){
         try{
@@ -213,4 +238,82 @@ public class ReceiverIMAP implements Supplier<Message[]> {
             }
         }
     };
+
+
+    //external API 2 fetch range of messages
+    public Message[] ExtractRange(int start, int end){
+        try{
+            GenerateSession();
+            InitStore();
+            System.out.println("Please wait ...");
+
+            Message[] result = CompletableFuture.supplyAsync(new SupplierRange(start, end)).get();
+            return result;
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            return  null;
+        }
+    }
+
+    private class SupplierRange implements  Supplier<Message[]> {
+        private int start;
+        private int end;
+
+        public SupplierRange(int start, int end){
+            this.start = start;
+            this.end = end;
+        }
+
+        @Override
+        public Message[] get() {
+            try{
+                return ObtainLimitedCount(start, end);
+            }
+            catch (Exception ex){
+                ex.printStackTrace();
+                return null;
+            }
+        }
+    }
+
+
+    public Message[] ExtractLast(int count){
+        try{
+            GenerateSession();
+            InitStore();
+            System.out.println("Please wait ...");
+
+
+            Message[] result = CompletableFuture.supplyAsync(new SupplierEnds(count, true)).get();
+            return result;
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            return  null;
+        }
+    }
+
+    private class SupplierEnds implements  Supplier<Message[]> {
+        private int count;
+        private boolean isLast;
+
+        public SupplierEnds(int count, boolean isLast){
+            this.count = count;
+            this.isLast = isLast;
+        }
+
+        @Override
+        public Message[] get() {
+            try{
+                if (this.isLast)
+                    return ObtainLast(this.count);
+                return null;
+            }
+            catch (Exception ex){
+                ex.printStackTrace();
+                return null;
+            }
+        }
+    }
 }

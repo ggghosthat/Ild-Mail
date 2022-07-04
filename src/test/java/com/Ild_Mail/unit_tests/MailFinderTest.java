@@ -5,10 +5,11 @@ import com.Ild_Mail.models.finder.MailFinder;
 import com.Ild_Mail.models.finder.SearchType;
 import com.Ild_Mail.models.recieve.ReceiverIMAP;
 
+import javax.mail.Message;
 import javax.mail.MessagingException;
 
 class MailFinderTest {
-    private MailFinder finder = new MailFinder("host","address","your google-app password");
+    private MailFinder finder = new MailFinder("host","","");
 
     private ReceiverIMAP reciever = new ReceiverIMAP();
 
@@ -18,7 +19,10 @@ class MailFinderTest {
 //        finder.setTemplate("inst");
 //        finder.search();
 
-        reciever.build("host","address","your password");
-        reciever.ExtractUnread();
+        reciever.build("","","");
+//        reciever.ExtractUnread();
+        for (Message msg : reciever.ExtractLast(10)){
+            System.out.println(msg.getSubject() + "---" + msg.getReceivedDate());
+        }
     }
 }
