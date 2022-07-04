@@ -83,7 +83,7 @@ public class MailFinder {
     }
 
     public void search() throws MessagingException{
-        Message[] messages = receiverIMAP.ExtractFromBox();
+        Message[] messages = receiverIMAP.ExtractAll();
         if(messages != null) {
             for (Message mes : SearchProcess(messages))
                 System.out.println(mes.getSubject());

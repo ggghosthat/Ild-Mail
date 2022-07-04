@@ -16,11 +16,11 @@ import static picocli.CommandLine.*;
         subcommands = {SendSMTPCommand.class, ReceiveIMAPCommand.class})
 public class Core implements Runnable {
 
-    public static ConfigReader configReader;
-    public static void main(String[] args) throws AddressException {
+//    public static ConfigReader configReader;
+
+    public static void main(String[] args) {
         new CommandLine(new Core()).execute(args);
     }
-
 
     @Override
     public void run() {
@@ -35,7 +35,4 @@ public class Core implements Runnable {
 //        System.out.println("Hello from Main");
     }
 
-    private static void RequirePassword(){
-
-    }
 }

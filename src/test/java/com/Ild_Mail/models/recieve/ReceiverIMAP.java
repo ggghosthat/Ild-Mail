@@ -1,17 +1,15 @@
 package com.Ild_Mail.models.recieve;
 
-import javafx.concurrent.Task;
-
 import javax.mail.*;
 import javax.mail.search.FlagTerm;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 public class ReceiverIMAP implements Supplier<Message[]> {
+    //region Fields
     private static String host = null;
     private static String address = null;
     private static String password = null;
@@ -32,8 +30,9 @@ public class ReceiverIMAP implements Supplier<Message[]> {
 
 
     private static List<Message> messages = new ArrayList<Message>();
+    //endregion
 
-
+    //region Initializers
     public ReceiverIMAP() {
     }
 
@@ -82,9 +81,7 @@ public class ReceiverIMAP implements Supplier<Message[]> {
 
         isUsingProxy = true;
     }
-
-
-
+    //endregion
 
     @Override
     public Message[] get() {
@@ -98,7 +95,7 @@ public class ReceiverIMAP implements Supplier<Message[]> {
 
     }
 
-
+    //region SessionFunctions
     //generating mail session for mail server connection
     private static void GenerateSession(){
         Properties properties = new Properties();
@@ -125,7 +122,9 @@ public class ReceiverIMAP implements Supplier<Message[]> {
         store = session.getStore("imaps");
         store.connect(host, address, password);
     }
+    //endregion
 
+    //region Obtain functions
     //Obtain IMAP folders
     //This method using for fetching all messages by IMAP proto
     private Message[] ObtainMessages() throws MessagingException {
@@ -162,9 +161,9 @@ public class ReceiverIMAP implements Supplier<Message[]> {
 
         return folder.getMessages(start, end);
     }
+    //endregion
 
-
-
+    //region default functionality
     //Fetching messages from mail box & converting
     //Here it fetching messages by IMAP proto asynchronously
     //Then we iterate them to unwrap each other
@@ -191,11 +190,11 @@ public class ReceiverIMAP implements Supplier<Message[]> {
             ex.printStackTrace();
         }
     }
+    //endregion
 
-
-
+    //region Extraction Functions
     //external API 2 fetch messages
-    public Message[] ExtractFromBox(){
+    public Message[] ExtractAll(){
         try{
             GenerateSession();
             InitStore();
@@ -225,7 +224,6 @@ public class ReceiverIMAP implements Supplier<Message[]> {
             return  null;
         }
     }
-
     Supplier<Message[]> supplierUnread = new Supplier<Message[]>() {
         @Override
         public Message[] get() {
@@ -255,7 +253,6 @@ public class ReceiverIMAP implements Supplier<Message[]> {
             return  null;
         }
     }
-
     private class SupplierRange implements  Supplier<Message[]> {
         private int start;
         private int end;
@@ -293,7 +290,6 @@ public class ReceiverIMAP implements Supplier<Message[]> {
             return  null;
         }
     }
-
     private class SupplierEnds implements  Supplier<Message[]> {
         private int count;
         private boolean isLast;
@@ -316,4 +312,6 @@ public class ReceiverIMAP implements Supplier<Message[]> {
             }
         }
     }
+    //endregion
+
 }

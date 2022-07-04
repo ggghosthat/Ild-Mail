@@ -1,5 +1,9 @@
 package com.Ild_Mail.models;
 
-public class Test {
 
+import org.javatuples.Pair;
+
+public class Test {
+    public static void main(String[] args) {
+    }
 }
