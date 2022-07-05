@@ -9,28 +9,33 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 public class ReceiverIMAP implements Supplier<Message[]> {
-    //region Fields
+
+    //region Authentication Fields
     private static String host = null;
     private static String address = null;
     private static String password = null;
+    //endregion
 
+    //region Proxy Fields
     private static Boolean isUsingProxy = false;
 
     private static String proxy_host = null;
     private static String proxy_port = null;
     private static String proxy_user = null;
     private static String proxy_password = null;
+    //endregion
 
+    //region Core Fields
     private static String allocation = null;
+    private static Message[] messageCache = null;
 
     private static Session session = null;
     private static Store store = null;
     private static Folder folder = null;
     private static Unwraper unwraper = null;
-
-
-    private static List<Message> messages = new ArrayList<Message>();
     //endregion
+
+
 
     //region Initializers
     public ReceiverIMAP() {
@@ -164,9 +169,6 @@ public class ReceiverIMAP implements Supplier<Message[]> {
     //endregion
 
     //region default functionality
-    //Fetching messages from mail box & converting
-    //Here it fetching messages by IMAP proto asynchronously
-    //Then we iterate them to unwrap each other
     private void LookFolders() throws Exception {
         CompletableFuture<Message[]> messagesFetched = CompletableFuture.supplyAsync(this::get);
         Message[] messages = messagesFetched.get();
@@ -179,49 +181,36 @@ public class ReceiverIMAP implements Supplier<Message[]> {
 
         System.out.println("All letters were recieved !");
     }
-
-    public void LookIntoBox(){
-        try{
-            GenerateSession();
-            InitStore();
-            LookFolders();
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-        }
-    }
     //endregion
 
-    //region Extraction Functions
-    //external API 2 fetch messages
-    public Message[] ExtractAll(){
+    //region External API methods
+    //fetch all messages from box
+    public void ExtractAll(){
         try{
             GenerateSession();
             InitStore();
             System.out.println("Please wait ...");
-            return  CompletableFuture.supplyAsync(this::get).get();
+            messageCache = CompletableFuture.supplyAsync(this::get).get();
+            System.out.println("All letters were recieved.");
         }
         catch (Exception ex){
             ex.printStackTrace();
-            return null;
         }
     }
 
 
-    //external API 2 fetch unread messages
-    public Message[] ExtractUnread(){
+    //fetch unread messages
+    public void ExtractUnread(){
         try{
             GenerateSession();
             InitStore();
             System.out.println("Please wait ...");
 
-            Message[] result = CompletableFuture.supplyAsync(supplierUnread).get();
-            System.out.println("You have" + result.length + "unread messages");
-            return result;
+            messageCache = CompletableFuture.supplyAsync(supplierUnread).get();
+            System.out.println("You have " + messageCache.length + " unread messages");
         }
         catch (Exception ex){
             ex.printStackTrace();
-            return  null;
         }
     }
     Supplier<Message[]> supplierUnread = new Supplier<Message[]>() {
@@ -238,20 +227,20 @@ public class ReceiverIMAP implements Supplier<Message[]> {
     };
 
 
-    //external API 2 fetch range of messages
-    public Message[] ExtractRange(int start, int end){
+    //fetch range of messages
+    public void ExtractRange(int start, int end){
         try{
             GenerateSession();
             InitStore();
             System.out.println("Please wait ...");
 
-            Message[] result = CompletableFuture.supplyAsync(new SupplierRange(start, end)).get();
-            return result;
+            messageCache = CompletableFuture.supplyAsync(new SupplierRange(start, end)).get();
+            System.out.println(String.format("Received all messages from your range (%d,%d).", start, end));
         }
         catch (Exception ex){
             ex.printStackTrace();
-            return  null;
         }
+
     }
     private class SupplierRange implements  Supplier<Message[]> {
         private int start;
@@ -274,20 +263,18 @@ public class ReceiverIMAP implements Supplier<Message[]> {
         }
     }
 
-
-    public Message[] ExtractLast(int count){
+    //fetch amount of messages in last
+    public void ExtractLast(int count){
         try{
             GenerateSession();
             InitStore();
             System.out.println("Please wait ...");
 
-
-            Message[] result = CompletableFuture.supplyAsync(new SupplierEnds(count, true)).get();
-            return result;
+            messageCache = CompletableFuture.supplyAsync(new SupplierEnds(count, true)).get();
+            System.out.println("Received last "+count+" messages.");
         }
         catch (Exception ex){
             ex.printStackTrace();
-            return  null;
         }
     }
     private class SupplierEnds implements  Supplier<Message[]> {
