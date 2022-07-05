@@ -1,7 +1,7 @@
-package com.Ild_Mail.models.input_reader;
+package com.Ild_Mail.models.input_processor.POJO;
 
 
-import com.Ild_Mail.models.input_reader.POJO.ConfigPOJO;
+import com.Ild_Mail.models.input_processor.POJO.ConfigPOJO;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -106,10 +106,4 @@ public class ConfigReader {
         }
         return imap_reciever;
     }
-
-
-
-
-
-
 }

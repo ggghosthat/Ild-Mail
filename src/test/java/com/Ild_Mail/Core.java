@@ -1,11 +1,8 @@
 package com.Ild_Mail;
 
-import com.Ild_Mail.models.input_reader.ConfigReader;
 import picocli.CommandLine;
-import com.Ild_Mail.models.input_reader.commands.ReceiveIMAPCommand;
-import com.Ild_Mail.models.input_reader.commands.SendSMTPCommand;
-
-import javax.mail.internet.AddressException;
+import com.Ild_Mail.models.input_processor.commands.ReceiveIMAPCommand;
+import com.Ild_Mail.models.input_processor.commands.SendSMTPCommand;
 
 import static picocli.CommandLine.*;
 

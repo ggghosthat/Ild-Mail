@@ -1,4 +1,4 @@
-package com.Ild_Mail.models.letter_notes_structures;
+package com.Ild_Mail.models.letter_model;
 
 import java.io.File;
 import java.io.PrintWriter;

@@ -1,7 +1,7 @@
 package com.Ild_Mail.unit_tests;
 
-import com.Ild_Mail.models.input_reader.ConfigReader;
-import com.Ild_Mail.models.input_reader.POJO.ConfigPOJO;
+import com.Ild_Mail.models.input_processor.POJO.ConfigReader;
+import com.Ild_Mail.models.input_processor.POJO.ConfigPOJO;
 
 import java.io.IOException;
 

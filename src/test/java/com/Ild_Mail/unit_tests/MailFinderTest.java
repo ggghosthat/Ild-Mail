@@ -1,11 +1,7 @@
 package com.Ild_Mail.unit_tests;
 
-import static org.junit.jupiter.api.Assertions.*;
 import com.Ild_Mail.models.finder.MailFinder;
-import com.Ild_Mail.models.finder.SearchType;
 import com.Ild_Mail.models.recieve.ReceiverIMAP;
-
-import javax.mail.Message;
 import javax.mail.MessagingException;
 
 class MailFinderTest {
@@ -20,9 +16,5 @@ class MailFinderTest {
 //        finder.search();
 
         reciever.build("","","");
-//        reciever.ExtractUnread();
-        for (Message msg : reciever.ExtractLast(10)){
-            System.out.println(msg.getSubject() + "---" + msg.getReceivedDate());
-        }
     }
 }

@@ -1,4 +1,4 @@
-package com.Ild_Mail.models.input_reader.commands;
+package com.Ild_Mail.models.input_processor.commands;
 
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;

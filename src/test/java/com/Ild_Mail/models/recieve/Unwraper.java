@@ -1,6 +1,6 @@
 package com.Ild_Mail.models.recieve;
 
-import com.Ild_Mail.models.letter_notes_structures.LetterPOJO;
+import com.Ild_Mail.models.letter_model.LetterPOJO;
 import org.parboiled.common.FileUtils;
 
 import javax.activation.DataHandler;
@@ -24,17 +24,11 @@ public class Unwraper implements Runnable {
     private String _subject;
     private Object _content;
 
-
-    private List<LetterPOJO> letterPOJOs = new ArrayList<LetterPOJO>();
-    private List<Multipart> multipartLetters = new ArrayList<Multipart>();
+    private List<LetterPOJO> letterPOJOs = new ArrayList<LetterPOJO>();    private List<Multipart> multipartLetters = new ArrayList<Multipart>();
     private List<String> textLetters = new ArrayList<String>();
 
 
-
-
-
-    public Unwraper(String alloc_box)
-    {
+    public Unwraper(String alloc_box){
         if (alloc_box != null)
             alloc_path = alloc_box;
         CheckSessionAllocPath();
@@ -50,7 +44,7 @@ public class Unwraper implements Runnable {
         }
     }
 
-    public void Open(Message enterMessage) throws Exception {
+    public void Unwrap(Message enterMessage) throws Exception {
         message = enterMessage;
         CompletableFuture<Void> unwrapping = CompletableFuture.runAsync(this);
         unwrapping.get();
@@ -74,6 +68,7 @@ public class Unwraper implements Runnable {
     }
 
 
+    //region Check paths
     //Check allocation path of fetched messages
     private void CheckSessionAllocPath(){
         try {
@@ -95,8 +90,9 @@ public class Unwraper implements Runnable {
         if (!alloc_file.exists())
             alloc_file.mkdir();
     }
+    //endregion
 
-
+    //region Message Parse Methods
     //This methods're parsing incomes
     private void MultipartParse(Multipart multipartMessage) throws  Exception{
         int count = multipartMessage.getCount();
@@ -193,6 +189,7 @@ public class Unwraper implements Runnable {
         if (is != null)
             is.close();
     }
+    //endregion
 
 
 }

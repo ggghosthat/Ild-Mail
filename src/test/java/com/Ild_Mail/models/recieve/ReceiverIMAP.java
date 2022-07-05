@@ -2,8 +2,6 @@ package com.Ild_Mail.models.recieve;
 
 import javax.mail.*;
 import javax.mail.search.FlagTerm;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -174,12 +172,7 @@ public class ReceiverIMAP implements Supplier<Message[]> {
         Message[] messages = messagesFetched.get();
         System.out.println("Found total count of messages : " + messages.length);
 
-        for (Message message : messages){
-            unwraper = new Unwraper(allocation);
-            unwraper.Open(message);
-        }
 
-        System.out.println("All letters were recieved !");
     }
     //endregion
 
@@ -300,5 +293,15 @@ public class ReceiverIMAP implements Supplier<Message[]> {
         }
     }
     //endregion
+
+    private void Unwrapping() throws Exception{
+        System.out.println("Unwrapping your messages, please wait ... (it can take a long time)");
+        for (Message message : messageCache){
+            unwraper = new Unwraper(allocation);
+            unwraper.Unwrap(message);
+        }
+
+        System.out.println("Unwrapping finished up!");
+    }
 
 }

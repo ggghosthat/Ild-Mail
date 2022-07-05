@@ -1,8 +1,8 @@
-package com.Ild_Mail.models.input_reader.commands;
+package com.Ild_Mail.models.input_processor.commands;
 
-import com.Ild_Mail.models.input_reader.ConfigReader;
-import com.Ild_Mail.models.input_reader.POJO.ConfigPOJO;
-import com.Ild_Mail.models.input_reader.pico_converters.PairTupleConverter;
+import com.Ild_Mail.models.input_processor.POJO.ConfigReader;
+import com.Ild_Mail.models.input_processor.POJO.ConfigPOJO;
+import com.Ild_Mail.models.input_processor.pico_converters.PairTupleConverter;
 import com.Ild_Mail.models.recieve.ReceiverIMAP;
 import org.javatuples.Pair;
 import picocli.CommandLine.Option;
