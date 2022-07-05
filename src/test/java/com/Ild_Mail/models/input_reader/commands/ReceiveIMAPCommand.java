@@ -22,7 +22,7 @@ public class ReceiveIMAPCommand implements Callable {
     private static ConfigPOJO configPOJO;
 
     //imap receiver to interact with mail
-    private static ReceiverIMAP reciever;
+    private static ReceiverIMAP receiver;
     //endregion
 
 
@@ -70,16 +70,16 @@ public class ReceiveIMAPCommand implements Callable {
         try {
             ConfigReader configReader = new ConfigReader(config_path);
             configReader.parseNode(ConfigPOJO.class);
-            reciever = configReader.EnableReciever(password);
+            receiver = configReader.EnableReciever(password);
 
             if(all)
-                System.out.println("all_option");
+                receiver.ExtractAll();
             if (unread)
-                System.out.println("unread_option");
+                receiver.ExtractUnread();
             if (range != null)
-                System.out.println(range);
+                receiver.ExtractRange(range.getValue0(), range.getValue1());
             if (last != 0)
-                System.out.println(last);
+                receiver.ExtractLast(last);
         }
         catch(Exception ex){
             ex.printStackTrace();
