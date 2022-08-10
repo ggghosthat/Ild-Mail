@@ -1,2 +1,2 @@
-# Ild_Mail
+# Ild-Mail
 simple mail client created on java
