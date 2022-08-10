@@ -9,7 +9,7 @@ class MailFinderTest {
 
     private ReceiverIMAP reciever = new ReceiverIMAP();
 
-    @org.junit.jupiter.api.Test
+
     public void findInterest() throws MessagingException {
 //        finder.setSearchType(SearchType.ADDRESS);
 //        finder.setTemplate("inst");

@@ -6,8 +6,7 @@ import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
-public class ReceiverIMAP implements Supplier<Message[]> {
-
+public class ReceiverPOP implements Supplier<Message[]> {
     //region Authentication Fields
     private static String host = null;
     private static String address = null;
@@ -33,21 +32,19 @@ public class ReceiverIMAP implements Supplier<Message[]> {
     private static Unwraper unwraper = null;
     //endregion
 
-
-
     //region Initializers
-    public ReceiverIMAP() {
+    public ReceiverPOP() {
     }
 
-    public ReceiverIMAP(String host, String address, String password, String allocation) {
+    public ReceiverPOP(String host, String address, String password, String allocation) {
         this.host = host;
         this.address = address;
         this.password = password;
         this.allocation = allocation;
     }
 
-    public ReceiverIMAP(String host, String address, String password, String allocation,
-                        String proxy_host, String proxy_port, String proxy_user, String proxy_password) {
+    public ReceiverPOP(String host, String address, String password, String allocation,
+                       String proxy_host, String proxy_port, String proxy_user, String proxy_password) {
         this.host = host;
         this.address = address;
         this.password = password;
@@ -60,7 +57,6 @@ public class ReceiverIMAP implements Supplier<Message[]> {
 
         this.isUsingProxy = true;
     }
-
 
 
     //build RecieverIMAP instance
@@ -87,7 +83,7 @@ public class ReceiverIMAP implements Supplier<Message[]> {
     //endregion
 
     @Override
-    public Message[] get() {
+    public Message[] get(){
         try {
             return ObtainMessages();
         }
@@ -95,40 +91,38 @@ public class ReceiverIMAP implements Supplier<Message[]> {
             ex.printStackTrace();
             return null;
         }
-
     }
 
     //region SessionFunctions
     //generating mail session for mail server connection
     private static void GenerateSession(){
         Properties properties = new Properties();
-        properties.setProperty("mail.imap.port","993");
-        properties.setProperty("mail.imap.ssl.enable","true");
-        properties.setProperty("mail.store.protocol","imaps");
+        properties.setProperty("mail.pop3.port","995");
+        properties.setProperty("mail.pop3.ssl.enable","true");
+        properties.setProperty("mail.store.protocol","pop3");
 
         if(isUsingProxy){
-            properties.setProperty("mail.imap.proxy.host",proxy_host);
-            properties.setProperty("mail.imap.proxy.port",proxy_port);
+            properties.setProperty("mail.pop3.proxy.host",proxy_host);
+            properties.setProperty("mail.pop3.proxy.port",proxy_port);
 
             if(proxy_user !=  null && proxy_password != null && proxy_user !=  "" && proxy_password != "") {
-                properties.setProperty("mail.imap.proxy.user", proxy_user);
-                properties.setProperty("mail.imap.proxy.password", proxy_password);
+                properties.setProperty("mail.pop3.proxy.user", proxy_user);
+                properties.setProperty("mail.pop3.proxy.password", proxy_password);
             }
         }
 
         session = session.getDefaultInstance(properties,null);
-        session.setDebug(false);
+        session.setDebug(true);
     }
 
     //initializing session store for communicating with mail messages
     private static void InitStore() throws MessagingException {
-        store = session.getStore("imaps");
+        store = session.getStore("pop3s");
         store.connect(host, address, password);
     }
     //endregion
 
     //region Obtain functions
-    //Obtain IMAP folders
     //This method using for fetching all messages
     private Message[] ObtainMessages() throws MessagingException {
         folder = store.getFolder("INBOX");
@@ -137,7 +131,6 @@ public class ReceiverIMAP implements Supplier<Message[]> {
         return folder.getMessages();
     }
 
-    //Obtain IMAP folders
     //This method using for fetching all unread messages by IMAP proto
     private Message[] ObtainUnreadMessages() throws MessagingException {
         folder = store.getFolder("INBOX");
@@ -146,14 +139,15 @@ public class ReceiverIMAP implements Supplier<Message[]> {
         return folder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
     }
 
+    //This method retrieving range of messages
     private Message[] ObtainLimitedCount(int startNum, int endNum) throws MessagingException{
         folder = store.getFolder("INBOX");
-
 
         folder.open(Folder.READ_WRITE);
         return folder.getMessages(startNum, endNum);
     }
 
+    //This method retrieving amount from the end
     private Message[] ObtainLast(int count) throws MessagingException{
         folder = store.getFolder("INBOX");
 
@@ -225,7 +219,7 @@ public class ReceiverIMAP implements Supplier<Message[]> {
             InitStore();
             System.out.println("Please wait ...");
 
-            messageCache = CompletableFuture.supplyAsync(new SupplierRange(start, end)).get();
+            messageCache = CompletableFuture.supplyAsync(new ReceiverPOP.SupplierRange(start, end)).get();
             System.out.println(String.format("Received all messages from your range (%d,%d).", start, end));
         }
         catch (Exception ex){
@@ -261,7 +255,7 @@ public class ReceiverIMAP implements Supplier<Message[]> {
             InitStore();
             System.out.println("Please wait ...");
 
-            messageCache = CompletableFuture.supplyAsync(new SupplierEnds(count, true)).get();
+            messageCache = CompletableFuture.supplyAsync(new ReceiverPOP.SupplierEnds(count, true)).get();
             System.out.println("Received last "+count+" messages.");
         }
         catch (Exception ex){
@@ -292,6 +286,7 @@ public class ReceiverIMAP implements Supplier<Message[]> {
     }
     //endregion
 
+    //region Unwrap
     private void Unwrapping() throws Exception{
         System.out.println("Unwrapping your messages, please wait ... (it can take a long time)");
         for (Message message : messageCache){
@@ -301,5 +296,10 @@ public class ReceiverIMAP implements Supplier<Message[]> {
 
         System.out.println("Unwrapping finished up!");
     }
+    //endregion
 
+    public static void Connect() throws MessagingException{
+        GenerateSession();
+        InitStore();
+    }
 }

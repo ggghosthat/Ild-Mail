@@ -9,7 +9,7 @@ class ConfigReaderTest {
 
     private ConfigReader configReader = new ConfigReader(System.getProperty("user.dir") + "\\src\\com\\java\\com\\Ild_Mail\\default\\config.json");
 
-    @org.junit.jupiter.api.Test
+
     void parseNode() {
         try {
             configReader.parseNode(ConfigPOJO.class );
