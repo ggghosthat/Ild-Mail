@@ -19,6 +19,6 @@ class ConfigReaderTest {
         }
 
         ConfigPOJO pojo = configReader.getConfigPOJO();
-        System.out.println(pojo.getSMTP_HOST() + " " + pojo.getIMAP_ADDRESS());
+        System.out.println(pojo.getSND_HOST() + " " + pojo.getREC_ADDRESS());
     }
 }

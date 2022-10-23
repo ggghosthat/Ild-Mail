@@ -4,6 +4,7 @@ import com.Ild_Mail.models.input_processor.POJO.ConfigReader;
 import com.Ild_Mail.models.input_processor.POJO.ConfigPOJO;
 import com.Ild_Mail.models.input_processor.pico_converters.PairTupleConverter;
 import com.Ild_Mail.models.recieve.ReceiverIMAP;
+import com.Ild_Mail.models.recieve.ReceiverPOP;
 import org.javatuples.Pair;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -12,17 +13,16 @@ import picocli.CommandLine.Command;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
 
-@Command(name="imap",
+@Command(name="pop",
         mixinStandardHelpOptions = true,
-        description = "receive messages with imap proto")
-public class ReceiveIMAPCommand implements Callable {
-
+        description = "receive messages with pop3 proto")
+public class ReceivePOPCommand  implements Callable{
     //region Fields
     //Represent config file
     private static ConfigPOJO configPOJO;
 
     //imap receiver to interact with mail
-    private static ReceiverIMAP receiver;
+    private static ReceiverPOP receiver;
     //endregion
 
 
@@ -38,10 +38,6 @@ public class ReceiveIMAPCommand implements Callable {
     @Option(names = {"-a", "--all"},
             description = "extract all messages from the box")
     private boolean all;
-
-    @Option(names = {"-un", "--unread"},
-            description = "extract unread messages from the box")
-    private boolean unread;
 
     @Option(names = {"-rg", "--range"},
             description = "extract messages range from the box \n\tExample: (startPos, endPos) ",
@@ -70,12 +66,10 @@ public class ReceiveIMAPCommand implements Callable {
         try {
             ConfigReader configReader = new ConfigReader(config_path);
             configReader.parseNode(ConfigPOJO.class);
-            receiver = configReader.EnableReciever(password);
+            receiver = (ReceiverPOP) configReader.EnableReciever(password);
 
             if(all)
                 receiver.ExtractAll();
-            if (unread)
-                receiver.ExtractUnread();
             if (range != null)
                 receiver.ExtractRange(range.getValue0(), range.getValue1());
             if (last != 0)

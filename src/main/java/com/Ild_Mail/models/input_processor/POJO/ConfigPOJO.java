@@ -2,13 +2,14 @@ package com.Ild_Mail.models.input_processor.POJO;
 
 public class ConfigPOJO {
     //SMTP auth config
-    private String SMTP_HOST;
-    private String SMTP_SOURCE;
+    private String SND_HOST;
+    private String SND_SOURCE;
 
     //IMAP auth config
-    private String IMAP_HOST;
-    private String IMAP_ADDRESS;
-    private String IMAP_ALLOC;
+    private String REC_PROTO;
+    private String REC_HOST;
+    private String REC_ADDRESS;
+    private String REC_ALLOC;
 
 
 
@@ -16,44 +17,48 @@ public class ConfigPOJO {
     private MailProxy mailProxy;
 
 
-    public String getSMTP_HOST() {
-        return SMTP_HOST;
+    public String getSND_HOST() {
+        return SND_HOST;
     }
 
-    public void setSMTP_HOST(String SMTP_HOST) {
-        this.SMTP_HOST = SMTP_HOST;
+    public void setSND_HOST(String SND_HOST) {
+        this.SND_HOST = SND_HOST;
     }
 
-    public String getSMTP_SOURCE() {
-        return SMTP_SOURCE;
+    public String getSND_SOURCE() {
+        return SND_SOURCE;
     }
 
-    public void setSMTP_SOURCE(String SMTP_SOURCE) {
-        this.SMTP_SOURCE = SMTP_SOURCE;
+    public void setSND_SOURCE(String SND_SOURCE) {
+        this.SND_SOURCE = SND_SOURCE;
     }
 
-    public String getIMAP_HOST() {
-        return IMAP_HOST;
+    public String getREC_PROTO() { return REC_PROTO; }
+
+    public void setREC_PROTO(String REC_PROTO) { this.REC_PROTO = REC_PROTO; }
+
+    public String getREC_HOST() {
+        return REC_HOST;
     }
 
-    public void setIMAP_HOST(String IMAP_HOST) {
-        this.IMAP_HOST = IMAP_HOST;
+    public void setREC_HOST(String REC_HOST) {
+        this.REC_HOST = REC_HOST;
     }
 
-    public String getIMAP_ADDRESS() {
-        return IMAP_ADDRESS;
+    public String getREC_ADDRESS() {
+        return REC_ADDRESS;
     }
 
-    public void setIMAP_ADDRESS(String IMAP_ADDRESS) {
-        this.IMAP_ADDRESS = IMAP_ADDRESS;
+    public void setREC_ADDRESS(String REC_ADDRESS) {
+        this.REC_ADDRESS = REC_ADDRESS;
     }
 
-    public String getIMAP_ALLOC() {
-        return IMAP_ALLOC;
+    public String getREC_ALLOC() {
+        return REC_ALLOC;
     }
 
-    public void setIMAP_ALLOC(String IMAP_ALLOC) {
-        this.IMAP_ALLOC = IMAP_ALLOC;
+    public void setREC_ALLOC(String REC_ALLOC) {
+        this.REC_ALLOC = REC_ALLOC;
     }
 
     public MailProxy getMailProxy() {

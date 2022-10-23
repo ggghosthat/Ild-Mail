@@ -70,7 +70,7 @@ public class ReceiveIMAPCommand implements Callable {
         try {
             ConfigReader configReader = new ConfigReader(config_path);
             configReader.parseNode(ConfigPOJO.class);
-            receiver = configReader.EnableReciever(password);
+            receiver = (ReceiverIMAP) configReader.EnableReciever(password);
 
             if(all)
                 receiver.ExtractAll();

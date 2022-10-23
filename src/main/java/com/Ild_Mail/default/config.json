@@ -1,10 +1,11 @@
 {
-  "SMTP_HOST": "smtp.mail.yahoo.com",
-  "SMTP_SOURCE": "ildarildar@yahoo.com",
+  "SND_HOST": "smtp.mail.yahoo.com",
+  "SND_SOURCE": "ildarildar@yahoo.com",
 
-  "IMAP_HOST": "imap.gmail.com",
-  "IMAP_ADDRESS": "ildarildar990@gmail.com",
-  "IMAP_ALLOC": "E:/gaga/allocation/",
+  "REC_PROTO": "pop",
+  "REC_HOST": "imap.gmail.com",
+  "REC_ADDRESS": "ildarildar990@gmail.com",
+  "REC_ALLOC": "E:/gaga/allocation/",
 
   "mailProxy": null
 }

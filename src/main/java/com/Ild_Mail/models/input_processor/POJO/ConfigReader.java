@@ -1,7 +1,7 @@
 package com.Ild_Mail.models.input_processor.POJO;
 
 
-import com.Ild_Mail.models.input_processor.POJO.ConfigPOJO;
+import com.Ild_Mail.models.recieve.ReceiverPOP;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -25,6 +25,7 @@ public class ConfigReader {
 
     private static Sender smtp_sender;
     private static ReceiverIMAP imap_reciever;
+    private static ReceiverPOP pop_receiver;
 
 
     //path to sending letter
@@ -68,16 +69,16 @@ public class ConfigReader {
     //Sender(SMTP) initialization
     public Sender EnableSender(String password, String target) throws AddressException {
         if (configPOJO.getMailProxy() == null) {
-            smtp_sender = new Sender(configPOJO.getSMTP_SOURCE(),
+            smtp_sender = new Sender(configPOJO.getSND_SOURCE(),
                     password,
                     target,
-                    configPOJO.getSMTP_HOST());
+                    configPOJO.getSND_HOST());
         }
         else{
-            smtp_sender = new Sender(configPOJO.getSMTP_SOURCE(),
+            smtp_sender = new Sender(configPOJO.getSND_SOURCE(),
                     password,
                     target,
-                    configPOJO.getSMTP_HOST(),
+                    configPOJO.getSND_HOST(),
                     configPOJO.getMailProxy().get_host(),
                     configPOJO.getMailProxy().get_port(),
                     configPOJO.getMailProxy().get_user(),
@@ -87,23 +88,70 @@ public class ConfigReader {
     }
 
     //Reciever(IMAP) initialization
-    public ReceiverIMAP EnableReciever(String password) throws AddressException {
+    public Object EnableReciever(String password) throws Exception {
+        if (configPOJO.getREC_PROTO().equals("imap")) {
+            if (configPOJO.getMailProxy() == null) {
+                imap_reciever = new ReceiverIMAP(configPOJO.getREC_HOST(),
+                        configPOJO.getREC_ADDRESS(),
+                        password,
+                        configPOJO.getREC_ALLOC());
+            } else {
+                imap_reciever = new ReceiverIMAP(configPOJO.getREC_HOST(),
+                        configPOJO.getREC_ADDRESS(),
+                        password,
+                        configPOJO.getREC_ALLOC(),
+                        configPOJO.getMailProxy().get_host(),
+                        configPOJO.getMailProxy().get_port(),
+                        configPOJO.getMailProxy().get_user(),
+                        configPOJO.getMailProxy().get_password());
+            }
+
+            System.out.println(configPOJO.getREC_PROTO());
+            return imap_reciever;
+        }
+        else if (configPOJO.getREC_PROTO().equals("pop")){
+            if (configPOJO.getMailProxy() == null) {
+                pop_receiver= new ReceiverPOP(configPOJO.getREC_HOST(),
+                        configPOJO.getREC_ADDRESS(),
+                        password,
+                        configPOJO.getREC_ALLOC());
+            }
+            else{
+                pop_receiver= new ReceiverPOP(configPOJO.getREC_HOST(),
+                        configPOJO.getREC_ADDRESS(),
+                        password,
+                        configPOJO.getREC_ALLOC(),
+                        configPOJO.getMailProxy().get_host(),
+                        configPOJO.getMailProxy().get_port(),
+                        configPOJO.getMailProxy().get_user(),
+                        configPOJO.getMailProxy().get_password());
+            }
+
+            return pop_receiver;
+        }
+        else {
+            throw  new Exception(String.format("Could find correct receiver for protocol: %s", configPOJO.getREC_PROTO()));
+        }
+    }
+
+    public ReceiverPOP EnablePOPReceiver(String password) throws Exception {
         if (configPOJO.getMailProxy() == null) {
-            imap_reciever= new ReceiverIMAP(configPOJO.getIMAP_HOST(),
-                                            configPOJO.getIMAP_ADDRESS(),
-                                            password,
-                                            configPOJO.getIMAP_ALLOC());
+            imap_reciever= new ReceiverIMAP(configPOJO.getREC_HOST(),
+                    configPOJO.getREC_ADDRESS(),
+                    password,
+                    configPOJO.getREC_ALLOC());
         }
         else{
-            imap_reciever= new ReceiverIMAP(configPOJO.getIMAP_HOST(),
-                                            configPOJO.getIMAP_ADDRESS(),
-                                            password,
-                                            configPOJO.getIMAP_ALLOC(),
-                                            configPOJO.getMailProxy().get_host(),
-                                            configPOJO.getMailProxy().get_port(),
-                                            configPOJO.getMailProxy().get_user(),
-                                            configPOJO.getMailProxy().get_password());
+            imap_reciever= new ReceiverIMAP(configPOJO.getREC_HOST(),
+                    configPOJO.getREC_ADDRESS(),
+                    password,
+                    configPOJO.getREC_ALLOC(),
+                    configPOJO.getMailProxy().get_host(),
+                    configPOJO.getMailProxy().get_port(),
+                    configPOJO.getMailProxy().get_user(),
+                    configPOJO.getMailProxy().get_password());
         }
-        return imap_reciever;
+
+        return pop_receiver;
     }
 }

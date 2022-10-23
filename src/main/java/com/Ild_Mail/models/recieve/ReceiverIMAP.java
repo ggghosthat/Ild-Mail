@@ -98,6 +98,12 @@ public class ReceiverIMAP implements Supplier<Message[]> {
 
     }
 
+
+    public String PrintHostProto() {
+        return this.host.split(".")[0];
+    }
+
+
     //region SessionFunctions
     //generating mail session for mail server connection
     private static void GenerateSession(){

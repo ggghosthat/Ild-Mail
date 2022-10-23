@@ -55,7 +55,7 @@ public class ReceiverPOP  implements Supplier<Message[]> {
         this.proxy_user = proxy_user;
         this.proxy_password = proxy_password;
 
-        this.isUsingProxy = true;
+        this.isUsingProxy = false;
     }
 
 
@@ -190,31 +190,6 @@ public class ReceiverPOP  implements Supplier<Message[]> {
     }
 
 
-    //fetch unread messages
-    public void ExtractUnread(){
-        try{
-            GenerateSession();
-            InitStore();
-            System.out.println("Please wait ...");
-
-            messageCache = CompletableFuture.supplyAsync(supplierUnread).get();
-            System.out.println("You have " + messageCache.length + " unread messages");
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-        }
-    }
-    Supplier<Message[]> supplierUnread = () -> {
-        try{
-            return ObtainUnreadMessages();
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            return null;
-        }
-    };
-
-
     //fetch range of messages
     public void ExtractRange(int start, int end){
         try{
@@ -286,6 +261,10 @@ public class ReceiverPOP  implements Supplier<Message[]> {
                 return null;
             }
         }
+    }
+
+    public String PrintHostProto() {
+        return this.host.split(".")[0];
     }
     //endregion
 
