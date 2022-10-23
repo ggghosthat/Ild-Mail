@@ -4,6 +4,7 @@ public class ConfigPOJO {
     //SMTP auth config
     private String SND_HOST;
     private String SND_SOURCE;
+    private String SND_TARGET;
 
     //IMAP auth config
     private String REC_PROTO;
@@ -32,6 +33,10 @@ public class ConfigPOJO {
     public void setSND_SOURCE(String SND_SOURCE) {
         this.SND_SOURCE = SND_SOURCE;
     }
+
+    public String getSND_TARGET() {return SND_TARGET;}
+
+    public void setSND_TARGET(String SND_TARGET) {this.SND_TARGET=SND_TARGET;}
 
     public String getREC_PROTO() { return REC_PROTO; }
 

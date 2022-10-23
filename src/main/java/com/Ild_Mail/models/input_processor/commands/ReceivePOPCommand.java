@@ -3,7 +3,6 @@ package com.Ild_Mail.models.input_processor.commands;
 import com.Ild_Mail.models.input_processor.POJO.ConfigReader;
 import com.Ild_Mail.models.input_processor.POJO.ConfigPOJO;
 import com.Ild_Mail.models.input_processor.pico_converters.PairTupleConverter;
-import com.Ild_Mail.models.recieve.ReceiverIMAP;
 import com.Ild_Mail.models.recieve.ReceiverPOP;
 import org.javatuples.Pair;
 import picocli.CommandLine.Option;
@@ -65,7 +64,7 @@ public class ReceivePOPCommand  implements Callable{
     private void ReceiveMail(String password){
         try {
             ConfigReader configReader = new ConfigReader(config_path);
-            configReader.parseNode(ConfigPOJO.class);
+            configReader.parseConfigNode(ConfigPOJO.class);
             receiver = (ReceiverPOP) configReader.EnableReciever(password);
 
             if(all)

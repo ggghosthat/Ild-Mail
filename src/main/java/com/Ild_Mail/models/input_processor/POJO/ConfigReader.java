@@ -1,6 +1,7 @@
 package com.Ild_Mail.models.input_processor.POJO;
 
 
+import com.Ild_Mail.models.input_processor.ini_processor.SendPOJO;
 import com.Ild_Mail.models.recieve.ReceiverPOP;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -10,6 +11,7 @@ import com.Ild_Mail.models.smtp_send.Sender;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.Ild_Mail.models.recieve.ReceiverIMAP;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +25,9 @@ public class ConfigReader {
     private static String path_config;
     private static ConfigPOJO configPOJO;
 
+    private static String path_send;
+    private static SendPOJO sendPOJO;
+
     private static Sender smtp_sender;
     private static ReceiverIMAP imap_reciever;
     private static ReceiverPOP pop_receiver;
@@ -32,16 +37,15 @@ public class ConfigReader {
     private String path;
 
 
-
-
     public ConfigReader(String path_config){
         this.path_config = path_config;
     }
 
-    public ConfigReader(String path_config, String path){
+    public ConfigReader(String path_config, String path_send){
         this.path_config = path_config;
-        this.path = path;
+        this.path_send = path_send;
     }
+
 
 
 
@@ -55,7 +59,7 @@ public class ConfigReader {
     }
 
     //Parse JSON staff to Config handler
-    public static void parseNode( Class<ConfigPOJO> config_pojo_clazz) throws IOException {
+    public static void parseConfigNode(Class<ConfigPOJO> config_pojo_clazz) throws IOException {
         JsonNode node = objectMapper.readTree(new File(path_config));
         configPOJO = objectMapper.treeToValue(node, config_pojo_clazz);
     }
@@ -64,26 +68,34 @@ public class ConfigReader {
         return configPOJO;
     }
 
+    public static void parseSendPOJO(Class<SendPOJO> send_pojo_class) throws IOException {
+        JsonNode node = objectMapper.readTree(new File(path_send));
+        sendPOJO = objectMapper.treeToValue(node, send_pojo_class);
+    }
+
+    public static SendPOJO getSendPOJO() {return sendPOJO;}
 
 
     //Sender(SMTP) initialization
-    public Sender EnableSender(String password, String target) throws AddressException {
+    public Sender EnableSender(String password) throws MessagingException, IOException {
+        System.out.println(configPOJO == null);
         if (configPOJO.getMailProxy() == null) {
             smtp_sender = new Sender(configPOJO.getSND_SOURCE(),
                     password,
-                    target,
+                    configPOJO.getSND_TARGET(),
                     configPOJO.getSND_HOST());
         }
         else{
             smtp_sender = new Sender(configPOJO.getSND_SOURCE(),
                     password,
-                    target,
+                    configPOJO.getSND_TARGET(),
                     configPOJO.getSND_HOST(),
                     configPOJO.getMailProxy().get_host(),
                     configPOJO.getMailProxy().get_port(),
                     configPOJO.getMailProxy().get_user(),
                     configPOJO.getMailProxy().get_password());
         }
+        smtp_sender.MessageUp(sendPOJO);
         return smtp_sender;
     }
 
@@ -134,24 +146,4 @@ public class ConfigReader {
         }
     }
 
-    public ReceiverPOP EnablePOPReceiver(String password) throws Exception {
-        if (configPOJO.getMailProxy() == null) {
-            imap_reciever= new ReceiverIMAP(configPOJO.getREC_HOST(),
-                    configPOJO.getREC_ADDRESS(),
-                    password,
-                    configPOJO.getREC_ALLOC());
-        }
-        else{
-            imap_reciever= new ReceiverIMAP(configPOJO.getREC_HOST(),
-                    configPOJO.getREC_ADDRESS(),
-                    password,
-                    configPOJO.getREC_ALLOC(),
-                    configPOJO.getMailProxy().get_host(),
-                    configPOJO.getMailProxy().get_port(),
-                    configPOJO.getMailProxy().get_user(),
-                    configPOJO.getMailProxy().get_password());
-        }
-
-        return pop_receiver;
-    }
 }

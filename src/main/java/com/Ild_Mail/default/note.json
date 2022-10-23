@@ -1,0 +1,6 @@
+{
+  "subject": "ild-mail",
+  "content": "this is a test message",
+  "isFile": false,
+  "attach": ["E:\\2.25\\Screenshot_2.png"]
+}

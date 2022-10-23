@@ -1,6 +1,7 @@
 {
-  "SND_HOST": "smtp.mail.yahoo.com",
-  "SND_SOURCE": "ildarildar@yahoo.com",
+  "SND_HOST": "smtp.mail.ru",
+  "SND_SOURCE": "ttifo@bk.ru",
+  "SND_TARGET": "ildarildar990@gmail.com",
 
   "REC_PROTO": "pop",
   "REC_HOST": "imap.gmail.com",

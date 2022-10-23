@@ -2,6 +2,7 @@ package com.Ild_Mail.models.input_processor.commands;
 
 import com.Ild_Mail.models.input_processor.POJO.ConfigReader;
 import com.Ild_Mail.models.input_processor.POJO.ConfigPOJO;
+import com.Ild_Mail.models.input_processor.ini_processor.SendPOJO;
 import com.Ild_Mail.models.smtp_send.Sender;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -32,9 +33,15 @@ public class SendSMTPCommand implements Callable {
     )
     private String config_path;
 
+    @Parameters(index = "1",
+            arity = "1",
+            description = "Path to your note.json",
+            defaultValue = "com\\Ild_Mail\\default\\note.json"
+    )
+    private String send_note;
+
     @Option(names = {"-t", "--target"},
-            description = "specify destination address",
-            required = true)
+            description = "specify destination address")
     private String send_target;
 
     @Option(names = {"-s", "--subject"},
@@ -70,10 +77,10 @@ public class SendSMTPCommand implements Callable {
 
     private void SendMail(String config_path, String password, String path2letter, String subject) {
         try {
-            ConfigReader configReader = new ConfigReader(config_path);
-            configReader.parseNode(ConfigPOJO.class);
-            Sender sender = configReader.EnableSender(password, send_target);
-            sender.MessageUp(subject, path2letter, attach_file, is_file);
+            ConfigReader configReader = new ConfigReader(config_path, send_note);
+            configReader.parseConfigNode(ConfigPOJO.class);
+            configReader.parseSendPOJO(SendPOJO.class);
+            Sender sender = configReader.EnableSender(password);
             sender.SendMessage();
         }
         catch (AddressException e) {

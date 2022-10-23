@@ -1,5 +1,7 @@
 package com.Ild_Mail.models.smtp_send;
 
+import com.Ild_Mail.models.input_processor.ini_processor.SendPOJO;
+
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.io.File;
@@ -7,6 +9,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class Sender {
@@ -28,6 +32,7 @@ public class Sender {
 
     private FileInputStream inputStream = null;
 
+    private List<MimeBodyPart> attaches = new ArrayList<>();
     private Multipart multipartMsg = new MimeMultipart();
 
     public Sender(String from, String password, String to, String host) throws AddressException {
@@ -54,6 +59,28 @@ public class Sender {
 
 
     //Send text message with single file
+    public void MessageUp(SendPOJO sendPOJO) throws IOException, MessagingException {
+        message = new MimeMessage(session);
+        MimeBodyPart mesPart = new MimeBodyPart();
+        for (String attach : sendPOJO.getAttach())
+            attaches.add(AttachProcess(attach));
+
+        String raw = ReadProcess(sendPOJO.getContent(),
+                sendPOJO.getIsFile());
+        mesPart.setText(raw);
+
+        multipartMsg.addBodyPart(mesPart);
+        if (attaches != null) {
+            for (MimeBodyPart attach : attaches)
+                multipartMsg.addBodyPart(attach);
+        }
+
+        message.setSubject(sendPOJO.getSubject());
+        message.setContent(multipartMsg);
+        message.setFrom(fromAddress);
+        message.setRecipients(Message.RecipientType.TO, new InternetAddress[]{toAddress});
+    }
+
     public void MessageUp(String subject, String text, String attachPath, boolean isTextFile) throws MessagingException, IOException {
         message = new MimeMessage(session);
         MimeBodyPart mesPart = new MimeBodyPart();

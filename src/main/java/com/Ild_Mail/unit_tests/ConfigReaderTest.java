@@ -12,7 +12,7 @@ class ConfigReaderTest {
 
     void parseNode() {
         try {
-            configReader.parseNode(ConfigPOJO.class );
+            configReader.parseConfigNode(ConfigPOJO.class );
 
         } catch (IOException e) {
             e.printStackTrace();
