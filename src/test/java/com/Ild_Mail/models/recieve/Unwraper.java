@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class Unwraper implements Runnable {
 
-    private static String alloc_path = "./session/";
+    private static String alloc_path = ".session/";
 
     private UUID id = UUID.randomUUID();
     private String message_alloc = alloc_path + id + '/';
@@ -24,7 +24,8 @@ public class Unwraper implements Runnable {
     private String _subject;
     private Object _content;
 
-    private List<LetterPOJO> letterPOJOs = new ArrayList<LetterPOJO>();    private List<Multipart> multipartLetters = new ArrayList<Multipart>();
+    private List<LetterPOJO> letterPOJOs = new ArrayList<LetterPOJO>();
+    private List<Multipart> multipartLetters = new ArrayList<Multipart>();
     private List<String> textLetters = new ArrayList<String>();
 
 

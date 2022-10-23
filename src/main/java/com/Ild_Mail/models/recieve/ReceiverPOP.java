@@ -1,7 +1,9 @@
 package com.Ild_Mail.models.recieve;
 
 import javax.mail.*;
+import javax.mail.search.FlagTerm;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 public class ReceiverPOP  implements Supplier<Message[]> {
@@ -83,7 +85,7 @@ public class ReceiverPOP  implements Supplier<Message[]> {
     @Override
     public Message[] get(){
         try {
-            return null;
+            return ObtainMessages();
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -122,6 +124,180 @@ public class ReceiverPOP  implements Supplier<Message[]> {
     public void Connect() throws MessagingException {
         GenerateSession();
         InitStore();
+    }
+    //endregion
+
+    //region Obtain functions
+    //This method using for fetching all messages
+    private Message[] ObtainMessages() throws MessagingException {
+        folder = store.getFolder("INBOX");
+
+        folder.open(Folder.READ_WRITE);
+        return folder.getMessages();
+    }
+
+    //This method using for fetching all unread messages by IMAP proto
+    private Message[] ObtainUnreadMessages() throws MessagingException {
+        folder = store.getFolder("INBOX");
+
+        folder.open(Folder.READ_WRITE);
+        return folder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
+    }
+
+    //This method retrieving range of messages
+    private Message[] ObtainLimitedCount(int startNum, int endNum) throws MessagingException{
+        folder = store.getFolder("INBOX");
+
+        folder.open(Folder.READ_WRITE);
+        return folder.getMessages(startNum, endNum);
+    }
+
+    //This method retrieving amount from the end
+    private Message[] ObtainLast(int count) throws MessagingException{
+        folder = store.getFolder("INBOX");
+
+
+        folder.open(Folder.READ_WRITE);
+        int end = folder.getMessageCount();
+        int start = end - count;
+
+        return folder.getMessages(start, end);
+    }
+    //endregion
+
+    //region default functionality
+    private void LookFolders() throws Exception {
+        CompletableFuture<Message[]> messagesFetched = CompletableFuture.supplyAsync(this::get);
+        Message[] messages = messagesFetched.get();
+        System.out.println("Found total count of messages : " + messages.length);
+    }
+    //endregion
+
+
+    //region External API methods
+    //fetch all messages from box
+    public void ExtractAll(){
+        try{
+            GenerateSession();
+            InitStore();
+            System.out.println("Please wait ...");
+            messageCache = CompletableFuture.supplyAsync(this::get).get();
+            System.out.println("All letters were recieved.");
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
+
+
+    //fetch unread messages
+    public void ExtractUnread(){
+        try{
+            GenerateSession();
+            InitStore();
+            System.out.println("Please wait ...");
+
+            messageCache = CompletableFuture.supplyAsync(supplierUnread).get();
+            System.out.println("You have " + messageCache.length + " unread messages");
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
+    Supplier<Message[]> supplierUnread = () -> {
+        try{
+            return ObtainUnreadMessages();
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            return null;
+        }
+    };
+
+
+    //fetch range of messages
+    public void ExtractRange(int start, int end){
+        try{
+            GenerateSession();
+            InitStore();
+            System.out.println("Please wait ...");
+
+            messageCache = CompletableFuture.supplyAsync(new ReceiverPOP.SupplierRange(start, end)).get();
+            System.out.println(String.format("Received all messages from your range (%d,%d).", start, end));
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+    }
+    private class SupplierRange implements  Supplier<Message[]> {
+        private int start;
+        private int end;
+
+        public SupplierRange(int start, int end){
+            this.start = start;
+            this.end = end;
+        }
+
+        @Override
+        public Message[] get() {
+            try{
+                return ObtainLimitedCount(start, end);
+            }
+            catch (Exception ex){
+                ex.printStackTrace();
+                return null;
+            }
+        }
+    }
+
+    //fetch amount of messages in last
+    public void ExtractLast(int count){
+        try{
+            GenerateSession();
+            InitStore();
+            System.out.println("Please wait ...");
+
+            messageCache = CompletableFuture.supplyAsync(new ReceiverPOP.SupplierEnds(count, true)).get();
+            System.out.println("Received last "+count+" messages.");
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
+    private class SupplierEnds implements  Supplier<Message[]> {
+        private int count;
+        private boolean isLast;
+
+        public SupplierEnds(int count, boolean isLast){
+            this.count = count;
+            this.isLast = isLast;
+        }
+
+        @Override
+        public Message[] get() {
+            try{
+                if (this.isLast)
+                    return ObtainLast(this.count);
+                return null;
+            }
+            catch (Exception ex){
+                ex.printStackTrace();
+                return null;
+            }
+        }
+    }
+    //endregion
+
+    //region Unwrap
+    private void Unwrapping() throws Exception{
+        System.out.println("Unwrapping your messages, please wait ... (it can take a long time)");
+        for (Message message : messageCache){
+            unwraper = new Unwraper(allocation);
+            unwraper.Unwrap(message);
+        }
+
+        System.out.println("Unwrapping finished up!");
     }
     //endregion
 }

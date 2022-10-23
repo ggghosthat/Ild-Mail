@@ -24,7 +24,8 @@ public class Unwraper implements Runnable {
     private String _subject;
     private Object _content;
 
-    private List<LetterPOJO> letterPOJOs = new ArrayList<LetterPOJO>();    private List<Multipart> multipartLetters = new ArrayList<Multipart>();
+    private List<LetterPOJO> letterPOJOs = new ArrayList<LetterPOJO>();
+    private List<Multipart> multipartLetters = new ArrayList<Multipart>();
     private List<String> textLetters = new ArrayList<String>();
 
 

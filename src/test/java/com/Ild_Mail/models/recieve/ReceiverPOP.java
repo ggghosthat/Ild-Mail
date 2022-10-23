@@ -120,6 +120,11 @@ public class ReceiverPOP implements Supplier<Message[]> {
         store = session.getStore("pop3s");
         store.connect(host, address, password);
     }
+
+    public static void Connect() throws MessagingException{
+        GenerateSession();
+        InitStore();
+    }
     //endregion
 
     //region Obtain functions
@@ -183,7 +188,6 @@ public class ReceiverPOP implements Supplier<Message[]> {
         }
     }
 
-
     //fetch unread messages
     public void ExtractUnread(){
         try{
@@ -210,7 +214,6 @@ public class ReceiverPOP implements Supplier<Message[]> {
             }
         }
     };
-
 
     //fetch range of messages
     public void ExtractRange(int start, int end){
@@ -298,8 +301,5 @@ public class ReceiverPOP implements Supplier<Message[]> {
     }
     //endregion
 
-    public static void Connect() throws MessagingException{
-        GenerateSession();
-        InitStore();
-    }
+
 }
