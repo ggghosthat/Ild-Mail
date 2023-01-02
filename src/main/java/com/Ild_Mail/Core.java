@@ -1,9 +1,8 @@
 package com.Ild_Mail;
 
-import com.Ild_Mail.models.input_processor.commands.ReceivePOPCommand;
 import picocli.CommandLine;
-import com.Ild_Mail.models.input_processor.commands.ReceiveIMAPCommand;
-import com.Ild_Mail.models.input_processor.commands.SendSMTPCommand;
+import com.Ild_Mail.models.input_processor.commands.ReceiveCommand;
+import com.Ild_Mail.models.input_processor.commands.SendCommand;
 
 import static picocli.CommandLine.*;
 
@@ -11,7 +10,7 @@ import static picocli.CommandLine.*;
         mixinStandardHelpOptions = true,
         version = "ild-mail 0.1",
         description = "tiny cli e-mail client",
-        subcommands = {SendSMTPCommand.class, ReceiveIMAPCommand.class, ReceivePOPCommand.class})
+        subcommands = {SendCommand.class, ReceiveCommand.class})
 public class Core {
 
 //    public static ConfigReader configReader;

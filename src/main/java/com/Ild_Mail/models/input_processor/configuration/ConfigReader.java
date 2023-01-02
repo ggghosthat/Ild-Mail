@@ -109,7 +109,6 @@ public class ConfigReader {
                         configPOJO.getMailProxy().get_password());
             }
 
-            System.out.println(configPOJO.getREC_PROTO());
             return imap_reciever;
         }
         else if (configPOJO.getREC_PROTO().equals("pop")){

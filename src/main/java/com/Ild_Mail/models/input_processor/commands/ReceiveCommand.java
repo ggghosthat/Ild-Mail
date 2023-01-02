@@ -3,6 +3,7 @@ package com.Ild_Mail.models.input_processor.commands;
 import com.Ild_Mail.models.input_processor.configuration.ConfigReader;
 import com.Ild_Mail.models.input_processor.configuration.ConfigPOJO;
 import com.Ild_Mail.models.input_processor.pico_converters.PairTupleConverter;
+import com.Ild_Mail.models.recieve.ReceiverIMAP;
 import com.Ild_Mail.models.recieve.ReceiverPOP;
 import org.javatuples.Pair;
 import picocli.CommandLine.Option;
@@ -12,16 +13,17 @@ import picocli.CommandLine.Command;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
 
-@Command(name="pop",
+@Command(name="rec",
         mixinStandardHelpOptions = true,
-        description = "receive messages with pop3 proto")
-public class ReceivePOPCommand  implements Callable{
+        description = "receive messages with imap proto")
+public class ReceiveCommand implements Callable {
+
     //region Fields
     //Represent config file
     private static ConfigPOJO configPOJO;
 
     //imap receiver to interact with mail
-    private static ReceiverPOP receiver;
+    private static Object receiver;
     //endregion
 
 
@@ -37,6 +39,10 @@ public class ReceivePOPCommand  implements Callable{
     @Option(names = {"-a", "--all"},
             description = "extract all messages from the box")
     private boolean all;
+
+    @Option(names = {"-un", "--unread"},
+            description = "extract unread messages from the box")
+    private boolean unread;
 
     @Option(names = {"-rg", "--range"},
             description = "extract messages range from the box \n\tExample: (startPos, endPos) ",
@@ -66,14 +72,30 @@ public class ReceivePOPCommand  implements Callable{
         try {
             ConfigReader configReader = new ConfigReader(config_path);
             configReader.parseConfigNode(ConfigPOJO.class);
-            receiver = (ReceiverPOP) configReader.EnableReciever(password);
+            receiver = configReader.EnableReciever(password);
 
-            if(all)
-                receiver.ExtractAll();
-            if (range != null)
-                receiver.ExtractRange(range.getValue0(), range.getValue1());
-            if (last != 0)
-                receiver.ExtractLast(last);
+            if (receiver instanceof ReceiverIMAP) {
+                if (all)
+                    ((ReceiverIMAP)receiver).ExtractAll();
+                if (unread)
+                    ((ReceiverIMAP)receiver).ExtractUnread();
+                if (range != null)
+                    ((ReceiverIMAP)receiver).ExtractRange(range.getValue0(), range.getValue1());
+                if (last != 0)
+                    ((ReceiverIMAP)receiver).ExtractLast(last);
+
+                ((ReceiverIMAP)receiver).Unwrapping();
+            }
+            if (receiver instanceof ReceiverPOP) {
+                if(all)
+                    ((ReceiverPOP)receiver).ExtractAll();
+                if (range != null)
+                    ((ReceiverPOP)receiver).ExtractRange(range.getValue0(), range.getValue1());
+                if (last != 0)
+                    ((ReceiverPOP)receiver).ExtractLast(last);
+
+                ((ReceiverPOP)receiver).Unwrapping();
+            }
         }
         catch(Exception ex){
             ex.printStackTrace();

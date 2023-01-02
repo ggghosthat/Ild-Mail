@@ -16,10 +16,10 @@ import java.util.Scanner;
 import java.util.concurrent.Callable;
 
 
-@Command(name="smtp",
+@Command(name="snd",
         mixinStandardHelpOptions = true,
         description = "send smpt messages")
-public class SendSMTPCommand implements Callable {
+public class SendCommand implements Callable {
 
     //Represent config file
     private ConfigPOJO configPOJO;

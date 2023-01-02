@@ -269,7 +269,7 @@ public class ReceiverPOP  implements Supplier<Message[]> {
     //endregion
 
     //region Unwrap
-    private void Unwrapping() throws Exception{
+    public void Unwrapping() throws Exception{
         System.out.println("Unwrapping your messages, please wait ... (it can take a long time)");
         for (Message message : messageCache){
             unwraper = new Unwraper(allocation);

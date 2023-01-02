@@ -3,7 +3,7 @@
   "SND_SOURCE": "ttifo@bk.ru",
   "SND_TARGET": "ildarildar990@gmail.com",
 
-  "REC_PROTO": "pop",
+  "REC_PROTO": "imap",
   "REC_HOST": "imap.gmail.com",
   "REC_ADDRESS": "ildarildar990@gmail.com",
   "REC_ALLOC": "E:/gaga/allocation/",
