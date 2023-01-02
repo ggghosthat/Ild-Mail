@@ -1,4 +1,4 @@
-package com.Ild_Mail.models.input_processor.POJO;
+package com.Ild_Mail.models.input_processor.configuration;
 
 public class ConfigPOJO {
     //SMTP auth config

@@ -16,6 +16,7 @@ public class MailFinderCommand implements Callable {
                 description = "Text to search")
     private String text;
 
+
     @Option(names={"-m", "--method"},
             description = "Define search type method")
     private String search_type;

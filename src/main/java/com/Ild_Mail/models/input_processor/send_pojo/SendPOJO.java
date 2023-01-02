@@ -1,4 +1,4 @@
-package com.Ild_Mail.models.input_processor.ini_processor;
+package com.Ild_Mail.models.input_processor.send_pojo;
 
 import java.util.ArrayList;
 import java.util.List;

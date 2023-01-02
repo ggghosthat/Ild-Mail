@@ -1,7 +1,7 @@
 package com.Ild_Mail.models.input_processor.commands;
 
-import com.Ild_Mail.models.input_processor.POJO.ConfigReader;
-import com.Ild_Mail.models.input_processor.POJO.ConfigPOJO;
+import com.Ild_Mail.models.input_processor.configuration.ConfigReader;
+import com.Ild_Mail.models.input_processor.configuration.ConfigPOJO;
 import com.Ild_Mail.models.input_processor.pico_converters.PairTupleConverter;
 import com.Ild_Mail.models.recieve.ReceiverPOP;
 import org.javatuples.Pair;
@@ -52,6 +52,7 @@ public class ReceivePOPCommand  implements Callable{
     @Override
     public Object call() {
         try{
+            System.out.print("Enter password :  ");
             String password = new Scanner(System.in).nextLine();
             ReceiveMail(password);
             return 0;

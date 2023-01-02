@@ -1,7 +1,6 @@
-package com.Ild_Mail.models.input_processor.POJO;
+package com.Ild_Mail.models.input_processor.configuration;
 
-
-import com.Ild_Mail.models.input_processor.ini_processor.SendPOJO;
+import com.Ild_Mail.models.input_processor.send_pojo.SendPOJO;
 import com.Ild_Mail.models.recieve.ReceiverPOP;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -12,10 +11,8 @@ import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.Ild_Mail.models.recieve.ReceiverIMAP;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
 import java.io.File;
 import java.io.IOException;
-
 
 public class ConfigReader {
     //Jackson JSON handler
@@ -32,7 +29,6 @@ public class ConfigReader {
     private static ReceiverIMAP imap_reciever;
     private static ReceiverPOP pop_receiver;
 
-
     //path to sending letter
     private String path;
 
@@ -45,10 +41,6 @@ public class ConfigReader {
         this.path_config = path_config;
         this.path_send = path_send;
     }
-
-
-
-
 
 
     private static ObjectMapper defaultObjectMapper(){
@@ -78,7 +70,6 @@ public class ConfigReader {
 
     //Sender(SMTP) initialization
     public Sender EnableSender(String password) throws MessagingException, IOException {
-        System.out.println(configPOJO == null);
         if (configPOJO.getMailProxy() == null) {
             smtp_sender = new Sender(configPOJO.getSND_SOURCE(),
                     password,

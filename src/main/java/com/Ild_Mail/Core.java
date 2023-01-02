@@ -12,25 +12,11 @@ import static picocli.CommandLine.*;
         version = "ild-mail 0.1",
         description = "tiny cli e-mail client",
         subcommands = {SendSMTPCommand.class, ReceiveIMAPCommand.class, ReceivePOPCommand.class})
-public class Core implements Runnable {
+public class Core {
 
 //    public static ConfigReader configReader;
 
     public static void main(String[] args) {
         new CommandLine(new Core()).execute(args);
     }
-
-    @Override
-    public void run() {
-
-//        ConfigReader configReader = new ConfigReader(config_path);
-//        try {
-//            configReader.parseNode(ConfigPOJO.class);
-//            configPOJO = configReader.getConfigPOJO();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        System.out.println("Hello from Main");
-    }
-
 }

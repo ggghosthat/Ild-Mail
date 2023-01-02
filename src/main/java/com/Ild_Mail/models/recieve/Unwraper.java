@@ -9,17 +9,17 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class Unwraper implements Runnable {
 
-    private static String alloc_path = "./session/";
-
-    private UUID id = UUID.randomUUID();
-    private String message_alloc = alloc_path + id + '/';
+    private static String alloc_path;
+    private String dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd/HH/mm/ss").format(LocalDateTime.now());
+    private String message_alloc = alloc_path + dateTime + '/';
     private Message message = null;
     private String _subject;
     private Object _content;
@@ -29,9 +29,11 @@ public class Unwraper implements Runnable {
     private List<String> textLetters = new ArrayList<String>();
 
 
-    public Unwraper(String alloc_box){
-        if (alloc_box != null)
-            alloc_path = alloc_box;
+    public Unwraper(String path){
+        if (path != null)
+            alloc_path = path;
+        else
+            alloc_path = "./session";
         CheckSessionAllocPath();
     }
 
@@ -73,9 +75,8 @@ public class Unwraper implements Runnable {
     //Check allocation path of fetched messages
     private void CheckSessionAllocPath(){
         try {
-            File alloc_file = new File(alloc_path);
-            if (!alloc_file.exists())
-                alloc_file.mkdir();
+            if(alloc_path != null)
+                new File(alloc_path).mkdir();
         }
         catch (Exception ex){
             ex.printStackTrace();

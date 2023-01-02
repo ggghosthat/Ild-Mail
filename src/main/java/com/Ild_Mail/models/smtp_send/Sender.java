@@ -1,6 +1,6 @@
 package com.Ild_Mail.models.smtp_send;
 
-import com.Ild_Mail.models.input_processor.ini_processor.SendPOJO;
+import com.Ild_Mail.models.input_processor.send_pojo.SendPOJO;
 
 import javax.mail.*;
 import javax.mail.internet.*;

@@ -1,8 +1,8 @@
 package com.Ild_Mail.models.input_processor.commands;
 
-import com.Ild_Mail.models.input_processor.POJO.ConfigReader;
-import com.Ild_Mail.models.input_processor.POJO.ConfigPOJO;
-import com.Ild_Mail.models.input_processor.ini_processor.SendPOJO;
+import com.Ild_Mail.models.input_processor.configuration.ConfigReader;
+import com.Ild_Mail.models.input_processor.configuration.ConfigPOJO;
+import com.Ild_Mail.models.input_processor.send_pojo.SendPOJO;
 import com.Ild_Mail.models.smtp_send.Sender;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -63,6 +63,7 @@ public class SendSMTPCommand implements Callable {
     @Override
     public Object call() {
         try {
+            System.out.print("Enter password :  ");
             String password = new Scanner(System.in).nextLine();
             SendMail(config_path,password, send_text, send_subject);
             return 0;
